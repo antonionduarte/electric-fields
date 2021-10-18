@@ -10,11 +10,15 @@ var pointProgram;
 var tableBuffer;
 var pointBuffer;
 
-// GLSL attributes and uniforms
+// GLSL Attributes 
 let vPosition;
 let vPointPosition;
+
+// GLSL Uniforms
 let uTableWidth;
 let uTableHeight;
+let uPointTableWidth;
+let uPointTableHeight;
 
 // Constants
 const TABLE_WIDTH = 3.0;
@@ -49,13 +53,15 @@ function setup(shaders) {
 	canvas.addEventListener("click", (event) => {
     // Start by getting x and y coordinates inside the canvas element
     const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
-		const y = (event.offsetY / canvas.height * table_height) - table_height / 2;
+		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
 		addPoint(x, y);
 	});
 
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
 	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
+	uPointTableWidth = gl.getUniformLocation(pointProgram, "uTableWidth");
+	uPointTableHeight = gl.getUniformLocation(pointProgram, "uTableHeight");
 	
 	// Create the table
 	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
@@ -77,7 +83,6 @@ function setup(shaders) {
 	// Fill in the buffer related to the table
 	gl.bindBuffer(gl.ARRAY_BUFFER, tableBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 
 	// Setup the viewport and background color
 	gl.viewport(0, 0, canvas.width, canvas.height);
@@ -105,9 +110,9 @@ function resizeCanvas() {
 
 function animate() {
 	// Drawing
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	// Draw the vertices
+	// Draw the table
 	gl.useProgram(program);
 
 	gl.uniform1f(uTableWidth, TABLE_WIDTH);
@@ -115,14 +120,19 @@ function animate() {
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, tableBuffer);
 	gl.enableVertexAttribArray(vPosition);
+	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 	gl.drawArrays(gl.POINTS, 0, vertices.length);
 	gl.disableVertexAttribArray(vPosition);
 
 	// Draw the points
 	gl.useProgram(pointProgram);
+
+	gl.uniform1f(uPointTableWidth, TABLE_WIDTH);
+	gl.uniform1f(uPointTableHeight, table_height);
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
-	gl.vertexAttribPointer(vPointPosition, 2, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(vPointPosition);
+	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 	gl.drawArrays(gl.POINTS, 0, points.length);
 	gl.disableVertexAttribArray(vPointPosition);
 
