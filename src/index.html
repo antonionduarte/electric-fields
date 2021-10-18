@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Exemplo</title>
+ 		<meta charset="utf-8"/>
+		<link rel="stylesheet" href="styles.css">
+	</head>
+	<body>
+		<script id="shader.vert" type="x-shader/vertex-shader">
+			attribute vec4 vPosition;
+
+			void main() {
+				gl_Position = vPosition;	
+			}
+		</script>
+		<script id="shader.frag" type="x-shader/fragment-shader">
+			void main() {
+				gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+			}
+		</script>
+		<script type="module" src="./app.js"></script>
+		<canvas id="gl-canvas" width="512" height="512"></canvas>
+	</body>
+</html>
