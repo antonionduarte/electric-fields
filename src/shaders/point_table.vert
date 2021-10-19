@@ -31,12 +31,12 @@ vec4 colorize(vec2 f) {
 
 void main() {
   vec4 positionModifier = vec4(uTableWidth / 2.0, uTableHeight / 2.0, 1.0, 1.0);
-  //if (vPosition.z == 1.0) {
-	//  gl_Position = vec4(vPosition.x, vPosition.y, 0.0, 1.0) / positionModifier;
-  //} else {
-	//  gl_Position = vec4(vPosition.x / (uTableWidth / 2.0) + 0.02, (vPosition.y / (uTableHeight / 2.0)) + 0.02, 0, 1);
-  //}
-	gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier; 
+  if (vPosition.z == 1.0) {
+	  gl_Position = vec4(vPosition.x, vPosition.y, 0.0, 1.0) / positionModifier;
+  } else {
+	  gl_Position = vec4(vPosition.x / (uTableWidth / 2.0) + 0.02, (vPosition.y / (uTableHeight / 2.0)) + 0.02, 0, 1);
+  }
+	//gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier; 
 	gl_PointSize = 4.0;
   aColor = colorize(vec2(vPosition.x, vPosition.y));
 }

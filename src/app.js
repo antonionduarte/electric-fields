@@ -20,7 +20,6 @@ let uTableHeight;
 let uChargeTableWidth;
 let uChargeTableHeight;
 
-
 // Constants
 const TABLE_WIDTH = 3.0;
 const GRID_SPACING = 0.05;
@@ -34,7 +33,7 @@ const canvas = document.getElementById("gl-canvas");
 let table_height;
 let tableVertices = [];
 
-// Point variables
+// Charge variables
 let charges = []
 
 function setup(shaders) {
@@ -54,11 +53,11 @@ function setup(shaders) {
 	window.addEventListener("resize", resizeCanvas);
 	canvas.addEventListener("click", (event) => {
     // Start by getting x and y coordinates inside the canvas element
-    	const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
+		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
 		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
 
 		if (charges.length + 1 <= 20) {
-			addPoint(x, y, event.shiftKey);
+			addCharge(x, y, event.shiftKey);
 		} else {
 			alert("Charge limit exceeded");
 		}
@@ -102,14 +101,16 @@ function setup(shaders) {
 	animate();
 }
 
-function addPoint(x, y, shiftKey) {
-	let newPoint = [vec2(x, y)];
-	charges.push({x: x, y: y, charge: shiftKey ? -1 : 1});
+function addCharge(x, y, shiftKey) {
+	let newCharge = [vec2(x, y)];
+	
 
-	//console.log(charges);
+	console.log(charges);
+
+	charges.push({x: x, y: y, theta: theta, charge: shiftKey ? - 1 : 1});
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
-	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newPoint));
+	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newCharge));
 }
 
 /**
@@ -140,17 +141,18 @@ function draw2DPoints(uniforms, buffer, attribute, srcData) {
         let location = (uniforms[i])[0];
         let value = (uniforms[i])[1];
         gl.uniform1f(location, value);
-	}
+		}
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.enableVertexAttribArray(attribute);
-        gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.POINTS, 0, srcData.length)
-        gl.disableVertexAttribArray(attribute);
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+		gl.enableVertexAttribArray(attribute);
+		gl.vertexAttribPointer(attribute, vecSize, gl.FLOAT, false, stride, offset);
+		gl.drawArrays(glMode, 0, amount)
+		gl.disableVertexAttribArray(attribute);
 }
 
+/*
 function rotateCharges() {
-	for(let i in charges) {
+	for (let i in charges) {
 		gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 
 		let rad = (Math.PI / 180.0) * ROTATION_MOD,
@@ -163,6 +165,13 @@ function rotateCharges() {
 		charges[i].y = (charge * (charges[i].x * s) + (charges[i].y * c));
 
 		gl.bufferSubData(gl.ARRAY_BUFFER, i * 2 * 4, flatten([vec2(charges[i].xPos, charges[i].yPos)]));
+	}
+}
+*/
+
+function rotateCharges() {
+	for (let i in charges) {
+		
 	}
 }
 
@@ -183,10 +192,10 @@ function animate() {
 	// Draw the points
 	gl.useProgram(chargeProgram);
 
-	rotateCharges();
+	//rotateCharges();
 	//Moves the points
 	uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
-	draw2DPoints(uniforms, chargeBuffer, vChargePosition, charges);
+	drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 0, 0);
 
 	window.requestAnimationFrame(animate);
 }
