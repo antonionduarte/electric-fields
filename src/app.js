@@ -114,7 +114,6 @@ function setup(shaders) {
 function addPoint(x, y) {
 	let newPoint = [vec2(x, y)];
 	charges.push(vec2(x, y));
-	//console.log(charges);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newPoint));
@@ -157,6 +156,10 @@ function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride
 		gl.disableVertexAttribArray(attribute);
 }
 
+/*
+ * Functions that runs on every frame and draws 
+ * the appropriate elements on the appropriate positions.
+*/
 function animate() {
 	// Drawing
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -167,8 +170,6 @@ function animate() {
 
 	let uniforms = [[uTableWidth, TABLE_WIDTH], [uTableHeight, table_height]];
 	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length, 3, gl.LINES, 0, 0);
-	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length / 2, 3, gl.POINTS, 6 * 4, 0);
-
 
 	// Draw the points
 	gl.useProgram(chargeProgram);
