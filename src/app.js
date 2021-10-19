@@ -4,11 +4,11 @@ import { vec2, flatten, vec4, sizeof } from "../../libs/MV.js"
 /** @type {WebGLRenderingContext} */
 var gl;
 var program;
-var pointProgram;
+var chargeProgram;
 
 // Buffers
 var tableBuffer;
-var pointBuffer;
+var chargeBuffer;
 
 // GLSL Attributes 
 let vPosition;
@@ -17,8 +17,8 @@ let vPointPosition;
 // GLSL Uniforms
 let uTableWidth;
 let uTableHeight;
-let uPointTableWidth;
-let uPointTableHeight;
+let uChargeTableWidth;
+let uChargeTableHeight;
 
 // Constants
 const TABLE_WIDTH = 3.0;
@@ -30,10 +30,10 @@ const canvas = document.getElementById("gl-canvas");
 
 // Table variables
 let table_height;
-let vertices = [];
+let tableVertices = [];
 
 // Point variables
-let points = []
+let charges = []
 
 function setup(shaders) {
 	// Setup
@@ -41,12 +41,12 @@ function setup(shaders) {
 	resizeCanvas();
 	
 	// Build programs
-	program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
-	pointProgram = buildProgramFromSources(gl, shaders["shader.vert"], shaders["point.frag"]);
+	program = buildProgramFromSources(gl, shaders["point_table.vert"], shaders["point_table.frag"]);
+	chargeProgram = buildProgramFromSources(gl, shaders["point_table.vert"], shaders["point_charge.frag"]);
 
 	// Attrib locations
 	vPosition = gl.getAttribLocation(program, "vPosition");
-	vPointPosition = gl.getAttribLocation(pointProgram, "vPosition");
+	vPointPosition = gl.getAttribLocation(chargeProgram, "vPosition");
 
 	// Event listeners
 	window.addEventListener("resize", resizeCanvas);
@@ -60,29 +60,29 @@ function setup(shaders) {
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
 	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
-	uPointTableWidth = gl.getUniformLocation(pointProgram, "uTableWidth");
-	uPointTableHeight = gl.getUniformLocation(pointProgram, "uTableHeight");
+	uChargeTableWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
+	uChargeTableHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
 	
 	// Create the table
 	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
 
 	for (let x = - (GRID_SPACING / 2 + TABLE_WIDTH / 2); x <= TABLE_WIDTH / 2; x += GRID_SPACING) {
     for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
-			vertices.push(vec2(x, y));
+			tableVertices.push(vec2(x, y));
     }
 	}
 
 	// Create the Buffers
-	pointBuffer = gl.createBuffer();
+	chargeBuffer = gl.createBuffer();
 	tableBuffer = gl.createBuffer();
 
 	// Fill in the buffer related to the points
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, 2 * 4 * MAX_POINTS, gl.STATIC_DRAW);
 
 	// Fill in the buffer related to the table
 	gl.bindBuffer(gl.ARRAY_BUFFER, tableBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, flatten(tableVertices), gl.STATIC_DRAW);
 
 	// Setup the viewport and background color
 	gl.viewport(0, 0, canvas.width, canvas.height);
@@ -94,11 +94,11 @@ function setup(shaders) {
 
 function addPoint(x, y) {
 	let newPoint = [vec2(x, y)];
-	points.push(vec2(x, y));
-	console.log(points);
+	charges.push(vec2(x, y));
+	//console.log(charges);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
-	gl.bufferSubData(gl.ARRAY_BUFFER, (points.length - 1) * 2 * 4, flatten(newPoint));
+	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
+	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newPoint));
 }
 
 function resizeCanvas() {
@@ -121,22 +121,22 @@ function animate() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, tableBuffer);
 	gl.enableVertexAttribArray(vPosition);
 	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-	gl.drawArrays(gl.POINTS, 0, vertices.length);
+	gl.drawArrays(gl.POINTS, 0, tableVertices.length);
 	gl.disableVertexAttribArray(vPosition);
 
 	// Draw the points
-	gl.useProgram(pointProgram);
+	gl.useProgram(chargeProgram);
 
-	gl.uniform1f(uPointTableWidth, TABLE_WIDTH);
-	gl.uniform1f(uPointTableHeight, table_height);
+	gl.uniform1f(uChargeTableWidth, TABLE_WIDTH);
+	gl.uniform1f(uChargeTableHeight, table_height);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.enableVertexAttribArray(vPointPosition);
 	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-	gl.drawArrays(gl.POINTS, 0, points.length);
+	gl.drawArrays(gl.POINTS, 0, charges.length);
 	gl.disableVertexAttribArray(vPointPosition);
 
 	window.requestAnimationFrame(animate);
 }
 
-loadShadersFromURLS(["shader.vert", "shader.frag", "point.frag"]).then(shaders => setup(shaders));
+loadShadersFromURLS(["point_table.vert", "point_table.frag", "point_charge.frag"]).then(shaders => setup(shaders));
