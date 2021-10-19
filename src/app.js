@@ -1,5 +1,5 @@
 import { loadShadersFromURLS, loadShadersFromScripts, setupWebGL, buildProgramFromSources } from "../libs/utils.js";
-import { vec2, vec3, flatten, vec4, sizeof } from "../libs/MV.js"
+import { vec2, vec3, vec4, flatten, sizeof } from "../libs/MV.js"
 
 /** @type {WebGLRenderingContext} */
 var gl;
@@ -75,7 +75,8 @@ function setup(shaders) {
 
 	for (let x = - (GRID_SPACING / 2 + TABLE_WIDTH / 2); x <= TABLE_WIDTH / 2; x += GRID_SPACING) {
     for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
-			tableVertices.push(vec2(x, y));
+			tableVertices.push(vec3(x, y, 1.0));
+			tableVertices.push(vec3(x, y, 0.0));
     }
 	}
 
@@ -85,7 +86,7 @@ function setup(shaders) {
 
 	// Fill in the buffer related to the points
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, 2 * 4 * MAX_POINTS, gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, 3 * 4 * MAX_POINTS, gl.STATIC_DRAW);
 
 	// Fill in the buffer related to the table
 	gl.bindBuffer(gl.ARRAY_BUFFER, tableBuffer);
@@ -94,6 +95,8 @@ function setup(shaders) {
 	// Setup the viewport and background color
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+	console.log(tableVertices.length);
 
 	// Call animate for the first time
 	animate();
@@ -109,6 +112,11 @@ function addPoint(x, y, shiftKey) {
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newPoint));
 }
 
+/**
+ * Functions that resizes the canvas correctly, by
+ * updating the width of the canvas, the height of the canvas,
+ * the height of the table and resetting the gl viewport with those new values.
+ */
 function resizeCanvas() {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
@@ -116,7 +124,18 @@ function resizeCanvas() {
 	gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
-function draw2DPoints(uniforms, buffer, attribute, srcData) {    
+/**
+ * Function responsible for drawing the points or lines between two vertices.
+ * @param {Array} uniforms
+ * @param {} buffer
+ * @param {} attribute
+ * @param {int} amount
+ * @param {int} vecSize
+ * @param {} glMode
+ * @param {int} stride
+ * @param {int} offset
+*/
+function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride, offset) {    
     for (let i in uniforms) {
         let location = (uniforms[i])[0];
         let value = (uniforms[i])[1];
@@ -147,6 +166,10 @@ function rotateCharges() {
 	}
 }
 
+/*
+ * Functions that runs on every frame and draws 
+ * the appropriate elements on the appropriate positions.
+*/
 function animate() {
 	// Drawing
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -155,7 +178,7 @@ function animate() {
 	gl.useProgram(program);
 
 	let uniforms = [[uTableWidth, TABLE_WIDTH], [uTableHeight, table_height]];
-	draw2DPoints(uniforms, tableBuffer, vPosition, tableVertices);
+	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length, 3, gl.LINES, 0, 0);
 
 	// Draw the points
 	gl.useProgram(chargeProgram);
