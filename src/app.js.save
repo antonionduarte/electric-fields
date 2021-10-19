@@ -1,6 +1,9 @@
 import { loadShadersFromURLS, loadShadersFromScripts, setupWebGL, buildProgramFromSources } from "../libs/utils.js";
+<<<<<<< HEAD
+import { vec2, vec3, flatten, vec4, sizeof } from "../libs/MV.js"
+=======
 import { vec2, vec3, vec4, flatten, sizeof } from "../libs/MV.js"
-
+>>>>>>> 55728bb3a75374c2d73e98ac69a4053a892ea50d
 /** @type {WebGLRenderingContext} */
 var gl;
 var program;
@@ -102,11 +105,22 @@ function setup(shaders) {
 	animate();
 }
 
+<<<<<<< HEAD
 function addPoint(x, y, shiftKey) {
 	let newPoint = [vec2(x, y)];
 	charges.push({x: x, y: y, charge: shiftKey ? -1 : 1});
 
 	//console.log(charges);
+=======
+/**
+ * Adds a new vec2 to the array of charges.
+ * @param {float} x the x coordinate of the charge.
+ * @param {float} y the y coordinate of the charge.
+ */
+function addPoint(x, y) {
+	let newPoint = [vec2(x, y)];
+	charges.push(vec2(x, y));
+>>>>>>> 55728bb3a75374c2d73e98ac69a4053a892ea50d
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newPoint));
@@ -135,11 +149,12 @@ function resizeCanvas() {
  * @param {int} stride
  * @param {int} offset
 */
-function draw2DPoints(uniforms, buffer, attribute, srcData) {    
+function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride, offset) {    
     for (let i in uniforms) {
         let location = (uniforms[i])[0];
         let value = (uniforms[i])[1];
         gl.uniform1f(location, value);
+<<<<<<< HEAD
 	}
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -164,6 +179,15 @@ function rotateCharges() {
 
 		gl.bufferSubData(gl.ARRAY_BUFFER, i * 2 * 4, flatten([vec2(charges[i].xPos, charges[i].yPos)]));
 	}
+=======
+		}
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+		gl.enableVertexAttribArray(attribute);
+		gl.vertexAttribPointer(attribute, vecSize, gl.FLOAT, false, stride, offset);
+		gl.drawArrays(glMode, 0, amount)
+		gl.disableVertexAttribArray(attribute);
+>>>>>>> 55728bb3a75374c2d73e98ac69a4053a892ea50d
 }
 
 /*
@@ -183,10 +207,18 @@ function animate() {
 	// Draw the points
 	gl.useProgram(chargeProgram);
 
+<<<<<<< HEAD
 	rotateCharges();
 	//Moves the points
 	uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
 	draw2DPoints(uniforms, chargeBuffer, vChargePosition, charges);
+=======
+	uniforms = [[uChargeWidth, TABLE_WIDTH], 
+						  [uChargeHeight, table_height], 
+						  [uChargeTheta, chargeTheta]
+	];
+	drawPoints(uniforms, chargeBuffer, vPointPosition, charges.length, 2, gl.POINTS, 0, 0);
+>>>>>>> 55728bb3a75374c2d73e98ac69a4053a892ea50d
 
 	window.requestAnimationFrame(animate);
 }

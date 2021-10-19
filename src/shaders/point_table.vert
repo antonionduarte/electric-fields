@@ -9,9 +9,10 @@ attribute vec3 vPosition;
 
 varying vec4 aColor;
 
-// convert angle to hue; returns RGB
-// colors corresponding to (angle mod TWOPI):
-// 0=red, PI/2=yellow-green, PI=cyan, -PI/2=purple
+/* Converts angle to hue; returns RGB
+/ colors corresponding to (angle mod TWOPI):
+/ 0=red, PI/2=yellow-green, PI=cyan, -PI/2=purple
+*/
 vec3 angle_to_hue(float angle) {
   angle /= TWOPI;
   return clamp((abs(fract(angle + vec3(3.0, 2.0, 1.0) / 3.0) * 6.0 - 3.0) - 1.0), 0.0, 1.0);
