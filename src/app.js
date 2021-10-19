@@ -1,5 +1,5 @@
-import { loadShadersFromURLS, loadShadersFromScripts, setupWebGL, buildProgramFromSources } from "../../libs/utils.js";
-import { vec2, flatten, vec4, sizeof } from "../../libs/MV.js"
+import { loadShadersFromURLS, loadShadersFromScripts, setupWebGL, buildProgramFromSources } from "../libs/utils.js";
+import { vec2, flatten, vec4, sizeof } from "../libs/MV.js"
 
 /** @type {WebGLRenderingContext} */
 var gl;
