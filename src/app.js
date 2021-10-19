@@ -106,6 +106,11 @@ function setup(shaders) {
 	animate();
 }
 
+/**
+ * Adds a new vec2 to the array of charges.
+ * @param {float} x the x coordinate of the charge.
+ * @param {float} y the y coordinate of the charge.
+ */
 function addPoint(x, y) {
 	let newPoint = [vec2(x, y)];
 	charges.push(vec2(x, y));
@@ -115,6 +120,11 @@ function addPoint(x, y) {
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newPoint));
 }
 
+/**
+ * Functions that resizes the canvas correctly, by
+ * updating the width of the canvas, the height of the canvas,
+ * the height of the table and resetting the gl viewport with those new values.
+ */
 function resizeCanvas() {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
@@ -122,7 +132,18 @@ function resizeCanvas() {
 	gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
-function drawPoints(uniforms, buffer, attribute, srcData, vecSize, glMode) {    
+/**
+ * Function responsible for drawing the points or lines between two vertices.
+ * @param {Array} uniforms
+ * @param {} buffer
+ * @param {} attribute
+ * @param {int} amount
+ * @param {int} vecSize
+ * @param {} glMode
+ * @param {int} stride
+ * @param {int} offset
+*/
+function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride, offset) {    
     for (let i in uniforms) {
         let location = (uniforms[i])[0];
         let value = (uniforms[i])[1];
@@ -131,8 +152,8 @@ function drawPoints(uniforms, buffer, attribute, srcData, vecSize, glMode) {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 		gl.enableVertexAttribArray(attribute);
-		gl.vertexAttribPointer(attribute, vecSize, gl.FLOAT, false, 0, 0);
-		gl.drawArrays(glMode, 0, srcData.length)
+		gl.vertexAttribPointer(attribute, vecSize, gl.FLOAT, false, stride, offset);
+		gl.drawArrays(glMode, 0, amount)
 		gl.disableVertexAttribArray(attribute);
 }
 
@@ -145,7 +166,9 @@ function animate() {
 	gl.useProgram(program);
 
 	let uniforms = [[uTableWidth, TABLE_WIDTH], [uTableHeight, table_height]];
-	drawPoints(uniforms, tableBuffer, vPosition, tableVertices, 3, gl.LINES);
+	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length, 3, gl.LINES, 0, 0);
+	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length / 2, 3, gl.POINTS, 6 * 4, 0);
+
 
 	// Draw the points
 	gl.useProgram(chargeProgram);
@@ -154,7 +177,7 @@ function animate() {
 						  [uChargeHeight, table_height], 
 						  [uChargeTheta, chargeTheta]
 	];
-	drawPoints(uniforms, chargeBuffer, vPointPosition, charges, 2, gl.POINTS);
+	drawPoints(uniforms, chargeBuffer, vPointPosition, charges.length, 2, gl.POINTS, 0, 0);
 
 	window.requestAnimationFrame(animate);
 }

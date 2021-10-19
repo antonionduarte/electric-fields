@@ -7,6 +7,8 @@ attribute vec3 vPosition;
 uniform float uTableWidth;
 uniform float uTableHeight;
 
+varying vec4 aColor;
+
 // convert angle to hue; returns RGB
 // colors corresponding to (angle mod TWOPI):
 // 0=red, PI/2=yellow-green, PI=cyan, -PI/2=purple
@@ -27,6 +29,13 @@ vec4 colorize(vec2 f) {
 }
 
 void main() {
-	gl_Position = vec4(vPosition.x / (uTableWidth / 2.0), (vPosition.y / (uTableHeight / 2.0)), 0, 1);
+  if (vPosition.z == 1.0) {
+	  gl_Position = vec4(vPosition.x / (uTableWidth / 2.0), (vPosition.y / (uTableHeight / 2.0)), 0, 1);
+  } else {
+	  gl_Position = vec4(vPosition.x / (uTableWidth / 2.0) + 0.02, (vPosition.y / (uTableHeight / 2.0)) + 0.02, 0, 1);
+  }
+
+	//gl_Position = vec4(vPosition.x / (uTableWidth / 2.0), (vPosition.y / (uTableHeight / 2.0)), 0, 1);
 	gl_PointSize = 4.0;
+  aColor = colorize(vec2(vPosition.x, vPosition.y));
 }
