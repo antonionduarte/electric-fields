@@ -59,7 +59,12 @@ function setup(shaders) {
     // Start by getting x and y coordinates inside the canvas element
     const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
 		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
-		addPoint(x, y);
+
+		if (charges.length + 1 <= 20) {
+			addPoint(x, y);
+		} else {
+			alert("Charge limit exceeded");
+		}
 	});
 
 	// Uniform Locations
@@ -114,6 +119,20 @@ function resizeCanvas() {
 	gl.viewport(0, 0, canvas.width, canvas.height);
 }
 
+function draw2DPoints(uniforms, buffer, attribute, srcData) {    
+    for (let i in uniforms) {
+        let location = (uniforms[i])[0];
+        let value = (uniforms[i])[1];
+        gl.uniform1f(location, value);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.enableVertexAttribArray(attribute);
+        gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 0, 0);
+        gl.drawArrays(gl.POINTS, 0, srcData.length)
+        gl.disableVertexAttribArray(attribute);
+    }
+}
+
 function animate() {
 	// Drawing
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -122,27 +141,17 @@ function animate() {
 	// Draw the table
 	gl.useProgram(program);
 
-	gl.uniform1f(uTableWidth, TABLE_WIDTH);
-	gl.uniform1f(uTableHeight, table_height);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, tableBuffer);
-	gl.enableVertexAttribArray(vPosition);
-	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-	gl.drawArrays(gl.POINTS, 0, tableVertices.length);
-	gl.disableVertexAttribArray(vPosition);
+	let uniforms = [[uTableWidth, TABLE_WIDTH], [uTableHeight, table_height]];
+	draw2DPoints(uniforms, tableBuffer, vPosition, tableVertices);
 
 	// Draw the points
 	gl.useProgram(chargeProgram);
 
-	gl.uniform1f(uChargeWidth, TABLE_WIDTH);
-	gl.uniform1f(uChargeHeight, table_height);
-	gl.uniform1f(uChargeTheta, chargeTheta);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
-	gl.enableVertexAttribArray(vPointPosition);
-	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-	gl.drawArrays(gl.POINTS, 0, charges.length);
-	gl.disableVertexAttribArray(vPointPosition);
+	uniforms = [[uChargeWidth, TABLE_WIDTH], 
+						  [uChargeHeight, table_height], 
+						  [uChargeTheta, chargeTheta]
+	];
+	draw2DPoints(uniforms, chargeBuffer, vPointPosition, charges);
 
 	window.requestAnimationFrame(animate);
 }
