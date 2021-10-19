@@ -1,12 +1,10 @@
 import { loadShadersFromURLS, loadShadersFromScripts, setupWebGL, buildProgramFromSources } from "../libs/utils.js";
-import { vec2, flatten, vec4, sizeof } from "../libs/MV.js"
+import { vec2, vec3, flatten, vec4, sizeof } from "../libs/MV.js"
 
 /** @type {WebGLRenderingContext} */
 var gl;
 var program;
 var chargeProgram;
-
-var chargeTheta = 0;
 
 // Buffers
 var tableBuffer;
@@ -14,21 +12,20 @@ var chargeBuffer;
 
 // GLSL Attributes 
 let vPosition;
-let vPointPosition;
+let vChargePosition;
 
 // GLSL Uniforms
 let uTableWidth;
 let uTableHeight;
+let uChargeTableWidth;
+let uChargeTableHeight;
 
-let uChargeWidth;
-let uChargeHeight;
-let uChargeTheta;
 
 // Constants
 const TABLE_WIDTH = 3.0;
 const GRID_SPACING = 0.05;
 const MAX_POINTS = 20;
-const CHARGE_SPEED_MOD = 0.025;
+const ROTATION_MOD = 5;
 
 // HTML variables
 const canvas = document.getElementById("gl-canvas");
@@ -51,17 +48,17 @@ function setup(shaders) {
 
 	// Attrib locations
 	vPosition = gl.getAttribLocation(program, "vPosition");
-	vPointPosition = gl.getAttribLocation(chargeProgram, "vPosition");
+	vChargePosition = gl.getAttribLocation(chargeProgram, "vPosition");
 
 	// Event listeners
 	window.addEventListener("resize", resizeCanvas);
 	canvas.addEventListener("click", (event) => {
     // Start by getting x and y coordinates inside the canvas element
-    const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
+    	const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
 		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
 
 		if (charges.length + 1 <= 20) {
-			addPoint(x, y);
+			addPoint(x, y, event.shiftKey);
 		} else {
 			alert("Charge limit exceeded");
 		}
@@ -70,10 +67,9 @@ function setup(shaders) {
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
 	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
-	uChargeWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
-	uChargeHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
-	uChargeTheta = gl.getUniformLocation(chargeProgram, "uTheta");
-	
+	uChargeTableWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
+	uChargeTableHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
+
 	// Create the table
 	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
 
@@ -103,9 +99,10 @@ function setup(shaders) {
 	animate();
 }
 
-function addPoint(x, y) {
+function addPoint(x, y, shiftKey) {
 	let newPoint = [vec2(x, y)];
-	charges.push(vec2(x, y));
+	charges.push({x: x, y: y, charge: shiftKey ? -1 : 1});
+
 	//console.log(charges);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
@@ -124,19 +121,35 @@ function draw2DPoints(uniforms, buffer, attribute, srcData) {
         let location = (uniforms[i])[0];
         let value = (uniforms[i])[1];
         gl.uniform1f(location, value);
+	}
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.enableVertexAttribArray(attribute);
         gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 0, 0);
         gl.drawArrays(gl.POINTS, 0, srcData.length)
         gl.disableVertexAttribArray(attribute);
-    }
+}
+
+function rotateCharges() {
+	for(let i in charges) {
+		gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
+
+		let rad = (Math.PI / 180.0) * ROTATION_MOD,
+		 	s = Math.sin(rad),
+		 	c = Math.cos(rad);
+
+		let charge = charges[i].charge;
+		
+		charges[i].x = ((charges[i].x * c) - charge * (charges[i].y * s));
+		charges[i].y = (charge * (charges[i].x * s) + (charges[i].y * c));
+
+		gl.bufferSubData(gl.ARRAY_BUFFER, i * 2 * 4, flatten([vec2(charges[i].xPos, charges[i].yPos)]));
+	}
 }
 
 function animate() {
 	// Drawing
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	chargeTheta += 1 * CHARGE_SPEED_MOD;
 
 	// Draw the table
 	gl.useProgram(program);
@@ -147,11 +160,10 @@ function animate() {
 	// Draw the points
 	gl.useProgram(chargeProgram);
 
-	uniforms = [[uChargeWidth, TABLE_WIDTH], 
-						  [uChargeHeight, table_height], 
-						  [uChargeTheta, chargeTheta]
-	];
-	draw2DPoints(uniforms, chargeBuffer, vPointPosition, charges);
+	rotateCharges();
+	//Moves the points
+	uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
+	draw2DPoints(uniforms, chargeBuffer, vChargePosition, charges);
 
 	window.requestAnimationFrame(animate);
 }
