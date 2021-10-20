@@ -53,7 +53,7 @@ function setup(shaders) {
 	// Event listeners
 	window.addEventListener("resize", resizeCanvas);
 	canvas.addEventListener("click", (event) => {
-    // Start by getting x and y coordinates inside the canvas element
+		// Start by getting x and y coordinates inside the canvas element
 		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
 		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
 
@@ -75,10 +75,10 @@ function setup(shaders) {
 	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
 
 	for (let x = - (GRID_SPACING / 2 + TABLE_WIDTH / 2); x <= TABLE_WIDTH / 2; x += GRID_SPACING) {
-    for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
+		for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
 			tableVertices.push(vec3(x, y, 1.0));
 			tableVertices.push(vec3(x, y, 0.0));
-    }
+		}
 	}
 
 	// Create the Buffers
