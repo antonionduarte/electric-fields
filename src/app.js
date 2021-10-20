@@ -67,7 +67,7 @@ function setup(shaders) {
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
 	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
-	uChargeAmount = gl.getUniformLocation(chargeProgram, "uChargeAmount");
+	uChargeAmount = gl.getUniformLocation(program, "uChargeAmount");
 	uChargeTableWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
 	uChargeTableHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
 
@@ -195,9 +195,10 @@ function animate() {
 
 	let uniforms = [
 		[uTableWidth, TABLE_WIDTH], 
-		[uTableHeight, table_height], 
-		[uChargeAmount, charges.length]
+		[uTableHeight, table_height]
 	];
+
+	gl.uniform1i(uChargeAmount, charges.length);
 
 	for (let i = 0; i < charges.length; i++) {
 		const uChargePosition = gl.getUniformLocation(program, "uChargePosition[" + i + "]");

@@ -4,6 +4,9 @@
 
 precision highp float;
 
+const float scale = 0.00000000001;
+const float maxSize = 0.25; 
+
 uniform float uTableWidth;
 uniform float uTableHeight;
 uniform vec3 uChargePosition[MAX_CHARGES];
@@ -35,17 +38,47 @@ vec4 colorize(vec2 f) {
 void main() {
   vec4 positionModifier = vec4(uTableWidth / 2.0, uTableHeight / 2.0, 1.0, 1.0);
   
+	int chargeCounter = uChargeAmount;
   // calculate the forces for this vector
-  if (vPosition.z == 1.0) { 
+  if (vPosition.z == 1.0) {
     // TODO: do stuff here
-    
+    float xF;
+		float yF;
+
     // provavelmente fazer cálculos para cada carga?
-    for (int i = 0; i < uChargeAmount; i++) {
-      // TODO: tentar considerando que é apenas uma ig
-    }
+		if (uChargeAmount > 0) {
+			for (int i = 0; i < MAX_CHARGES; i++) {
+				if (i >= uChargeAmount) break;
+
+				float xC = uChargePosition[i].x;
+				float yC = uChargePosition[i].y;
+
+				vec2 vec = vec2(xC, yC) - vec2(vPosition.x, vPosition.y);
+				
+				float dist = sqrt((vec.x * vec.x) + (vec.y * vec.y));
+
+				if (dist > maxSize) {
+					vec2 vecN = normalize(vec);
+					vec = maxSize * vecN;
+				}
+
+				xF = vPosition.x + vec.x;
+				yF = vPosition.y + vec.y;
+			}
+
+			gl_Position = vec4(xF, yF, 0, 1) / positionModifier;
+		} 
+		else {
+			gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier;
+		}
+
+		aColor = colorize(vec2(xF, yF));
   }
 
-  gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier; 
+	if (vPosition.z == 0.0) {
+  	gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier; 
+  	aColor = vec4(0.0, 0.0, 0.0, 1.0); 
+	}
+
 	gl_PointSize = 4.0;
-  aColor = colorize(vec2(vPosition.x, vPosition.y));
 }
