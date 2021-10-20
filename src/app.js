@@ -95,8 +95,6 @@ function setup(shaders) {
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-	console.log(tableVertices.length);
-
 	// Call animate for the first time
 	animate();
 }
@@ -162,10 +160,11 @@ function rotateCharges() {
 	for (let i in charges) {
 		let x = charges[i].x;
 		let y = charges[i].y;
+		let charge = charges[i].charge;
 
 		// Rotated positions
-		charges[i].x = (x * c) - (y * s);
-		charges[i].y = (x * s) + (y * c);
+		charges[i].x = (x * c) - charge * (y * s);
+		charges[i].y = (charge * x * s) + (y * c);
 
 		newCharges.push(vec2(charges[i].x, charges[i].y))
 	}
