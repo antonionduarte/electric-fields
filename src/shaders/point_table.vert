@@ -38,6 +38,7 @@ vec4 colorize(vec2 f) {
 
 
 void main() {
+	//gl_PointSize = 0.5;
 	vec4 positionModifier = vec4(uTableWidth / 2.0, uTableHeight / 2.0, 1.0, 1.0);
 
 	if (vPosition.z == 1.0) {

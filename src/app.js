@@ -25,7 +25,7 @@ let uChargeAmount;
 const TABLE_WIDTH = 3.0;
 const GRID_SPACING = 0.05;
 const MAX_CHARGES = 20;
-const ROTATION_MOD = 1;
+const ROTATION_MOD = 1.5;
 
 // HTML variables
 const canvas = document.getElementById("gl-canvas");
@@ -36,6 +36,7 @@ let tableVertices = [];
 
 // Charge variables
 let charges = []
+let cVisible = true;
 
 function setup(shaders) {
 	// Setup
@@ -57,12 +58,17 @@ function setup(shaders) {
 		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
 		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
 
-		if (charges.length + 1 <= 20) {
+		if (charges.length + 1 <= MAX_CHARGES) {
 			addCharge(x, y, event.shiftKey);
 		} else {
 			alert("Charge limit exceeded");
 		}
 	});
+	window.addEventListener("keydown", (event) => {
+		if(event.code == 'Space') {
+			cVisible = !cVisible;
+		}
+	})
 
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
@@ -206,16 +212,18 @@ function animate() {
 		const charge = vec3(charges[i].x, charges[i].y, charges[i].charge);
 		gl.uniform3fv(uChargePosition, flatten(charge));
 	}
-
+	
 	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length, 3, gl.LINES, 0, 0);
 
-	// Draw the charges
-	gl.useProgram(chargeProgram);
-
 	rotateCharges();
-	uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
-	drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 0, 0);
 
+	if(cVisible) {
+		// Draw the charges
+		gl.useProgram(chargeProgram);
+
+		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
+		drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 0, 0);
+	}
 	window.requestAnimationFrame(animate);
 }
 
