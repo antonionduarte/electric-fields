@@ -74,10 +74,13 @@ function setup(shaders) {
 	// Create the table
 	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
 
+	let rand;
 	for (let x = - (GRID_SPACING / 2 + TABLE_WIDTH / 2); x <= TABLE_WIDTH / 2; x += GRID_SPACING) {
     for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
-			tableVertices.push(vec3(x, y, 1.0));
-			tableVertices.push(vec3(x, y, 0.0));
+		rand = (Math.random() - 0.5) * GRID_SPACING;
+
+		tableVertices.push(vec3(x + rand, y + rand, 1.0));
+		tableVertices.push(vec3(x + rand, y + rand, 0.0));
     }
 	}
 
@@ -111,8 +114,6 @@ function addCharge(x, y, shiftKey) {
 	let newCharge = [vec2(x, y)];
 	
 	charges.push({x: x, y: y, charge: shiftKey ? - 1.0 : 1.0});
-
-	console.log(charges);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newCharge));

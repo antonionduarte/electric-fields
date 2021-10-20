@@ -5,7 +5,7 @@
 precision highp float;
 
 const float scale = 0.000000000007;
-const float maxSize = 0.25; 
+const float maxSize = 0.15; 
 
 uniform float uTableWidth;
 uniform float uTableHeight;
