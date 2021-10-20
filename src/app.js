@@ -213,7 +213,6 @@ function animate() {
 	gl.useProgram(chargeProgram);
 
 	rotateCharges();
-	//Moves the points
 	uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
 	drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 0, 0);
 
