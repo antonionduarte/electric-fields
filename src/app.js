@@ -217,7 +217,7 @@ function animate() {
 
 	rotateCharges();
 
-	if(cVisible) {
+	if (cVisible) {
 		// Draw the charges
 		gl.useProgram(chargeProgram);
 
