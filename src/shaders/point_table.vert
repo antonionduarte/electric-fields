@@ -52,12 +52,11 @@ void main() {
 
 				float xC = uChargePosition[i].x;
 				float yC = uChargePosition[i].y;
+				float charge = uChargePosition[i].z;
 
-				vec2 vec = vec2(xC, yC) - vec2(vPosition.x, vPosition.y);
-				
-				float dist = sqrt((vec.x * vec.x) + (vec.y * vec.y));
+				vec2 vec = (vec2(xC, yC) - vec2(vPosition.x, vPosition.y)) * charge;
 
-				if (dist > maxSize) {
+				if (length(vec) > maxSize) {
 					vec2 vecN = normalize(vec);
 					vec = maxSize * vecN;
 				}
