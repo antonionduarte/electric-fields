@@ -193,8 +193,6 @@ function animate() {
 	// Draw the table
 	gl.useProgram(program);
 
-
-	// Draw the table
 	let uniforms = [
 		[uTableWidth, TABLE_WIDTH], 
 		[uTableHeight, table_height], 
