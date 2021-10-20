@@ -1,5 +1,5 @@
 import { loadShadersFromURLS, loadShadersFromScripts, setupWebGL, buildProgramFromSources } from "../libs/utils.js";
-import { vec2, vec3, vec4, flatten, sizeof } from "../libs/MV.js"
+import { vec2, vec3, vec4, flatten, sizeof, radians  } from "../libs/MV.js"
 
 /** @type {WebGLRenderingContext} */
 var gl;
@@ -19,12 +19,13 @@ let uTableWidth;
 let uTableHeight;
 let uChargeTableWidth;
 let uChargeTableHeight;
+let uChargeAmount;
 
 // Constants
 const TABLE_WIDTH = 3.0;
 const GRID_SPACING = 0.05;
-const MAX_POINTS = 20;
-const ROTATION_MOD = 5;
+const MAX_CHARGES = 20;
+const ROTATION_MOD = 1;
 
 // HTML variables
 const canvas = document.getElementById("gl-canvas");
@@ -66,6 +67,7 @@ function setup(shaders) {
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
 	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
+	uChargeAmount = gl.getUniformLocation(program, "uChargeAmount");
 	uChargeTableWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
 	uChargeTableHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
 
@@ -85,7 +87,7 @@ function setup(shaders) {
 
 	// Fill in the buffer related to the points
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, 3 * 4 * MAX_POINTS, gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, 3 * 4 * MAX_CHARGES, gl.STATIC_DRAW);
 
 	// Fill in the buffer related to the table
 	gl.bindBuffer(gl.ARRAY_BUFFER, tableBuffer);
@@ -95,19 +97,22 @@ function setup(shaders) {
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-	console.log(tableVertices.length);
-
 	// Call animate for the first time
 	animate();
 }
 
+/**
+ * Adds a new vec2 to the array of charges.
+ * @param {float} x the x coordinate of the charge.
+ * @param {float} y the y coordinate of the charge.
+ * @param {boolean} shiftKey indicates if the shiftkey was pressed or not
+ */
 function addCharge(x, y, shiftKey) {
 	let newCharge = [vec2(x, y)];
 	
+	charges.push({x: x, y: y, charge: shiftKey ? - 1.0 : 1.0});
 
 	console.log(charges);
-
-	charges.push({x: x, y: y, theta: theta, charge: shiftKey ? - 1 : 1});
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newCharge));
@@ -136,43 +141,54 @@ function resizeCanvas() {
  * @param {int} stride
  * @param {int} offset
 */
+<<<<<<< HEAD
 function draw2DPoints(uniforms, buffer, attribute, srcData) {    
     for (let i in uniforms) {
         let location = (uniforms[i])[0];
         let value = (uniforms[i])[1];
         gl.uniform1f(location, value);
 		}
+=======
+function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride, offset) {    
+	for (let i in uniforms) {
+		let location = (uniforms[i])[0];
+		let value = (uniforms[i])[1];
+		gl.uniform1f(location, value);
+	}
+>>>>>>> 9330173e7bba5fada9cfbc0a0483ba40d5b62723
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-		gl.enableVertexAttribArray(attribute);
-		gl.vertexAttribPointer(attribute, vecSize, gl.FLOAT, false, stride, offset);
-		gl.drawArrays(glMode, 0, amount)
-		gl.disableVertexAttribArray(attribute);
+	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	gl.enableVertexAttribArray(attribute);
+	gl.vertexAttribPointer(attribute, vecSize, gl.FLOAT, false, stride, offset);
+	gl.drawArrays(glMode, 0, amount)
+	gl.disableVertexAttribArray(attribute);
 }
 
 /*
-function rotateCharges() {
-	for (let i in charges) {
-		gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
-
-		let rad = (Math.PI / 180.0) * ROTATION_MOD,
-		 	s = Math.sin(rad),
-		 	c = Math.cos(rad);
-
-		let charge = charges[i].charge;
-		
-		charges[i].x = ((charges[i].x * c) - charge * (charges[i].y * s));
-		charges[i].y = (charge * (charges[i].x * s) + (charges[i].y * c));
-
-		gl.bufferSubData(gl.ARRAY_BUFFER, i * 2 * 4, flatten([vec2(charges[i].xPos, charges[i].yPos)]));
-	}
-}
+ * Rotates the charges,
+ * by changing their coordinates,
+ * around the center of the table in a circular motion.
 */
-
 function rotateCharges() {
+	let newCharges = [];
+	let rad = ROTATION_MOD * (Math.PI / 180.0),
+		s = Math.sin(rad),
+		c = Math.cos(rad);
+
 	for (let i in charges) {
-		
+		let x = charges[i].x;
+		let y = charges[i].y;
+		let charge = charges[i].charge;
+
+		// Rotated positions
+		charges[i].x = (x * c) - charge * (y * s);
+		charges[i].y = (charge * x * s) + (y * c);
+
+		newCharges.push(vec2(charges[i].x, charges[i].y))
 	}
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(newCharges));
 }
 
 /*
@@ -186,14 +202,25 @@ function animate() {
 	// Draw the table
 	gl.useProgram(program);
 
-	let uniforms = [[uTableWidth, TABLE_WIDTH], [uTableHeight, table_height]];
+	let uniforms = [
+		[uTableWidth, TABLE_WIDTH], 
+		[uTableHeight, table_height]
+	];
+
+	gl.uniform1i(uChargeAmount, charges.length);
+
+	for (let i = 0; i < charges.length; i++) {
+		const uChargePosition = gl.getUniformLocation(program, "uChargePosition[" + i + "]");
+		const charge = vec3(charges[i].x, charges[i].y, charges[i].charge);
+		gl.uniform3fv(uChargePosition, flatten(charge));
+	}
+
 	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length, 3, gl.LINES, 0, 0);
 
-	// Draw the points
+	// Draw the charges
 	gl.useProgram(chargeProgram);
 
-	//rotateCharges();
-	//Moves the points
+	rotateCharges();
 	uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
 	drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 0, 0);
 
