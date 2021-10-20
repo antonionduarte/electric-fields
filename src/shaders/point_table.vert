@@ -38,6 +38,11 @@ void main() {
   // calculate the forces for this vector
   if (vPosition.z == 1.0) { 
     // TODO: do stuff here
+    
+    // provavelmente fazer cálculos para cada carga?
+    for (int i = 0; i < uChargeAmount; i++) {
+      // TODO: tentar considerando que é apenas uma ig
+    }
   }
 
   gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier; 
