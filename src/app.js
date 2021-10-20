@@ -82,12 +82,12 @@ function setup(shaders) {
 
 	let rand;
 	for (let x = - (GRID_SPACING / 2 + TABLE_WIDTH / 2); x <= TABLE_WIDTH / 2; x += GRID_SPACING) {
-    	for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
+		for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
 			rand = (Math.random() - 0.5) * GRID_SPACING;
 
 			tableVertices.push(vec3(x + rand, y + rand, 1.0));
 			tableVertices.push(vec3(x + rand, y + rand, 0.0));
-    	}
+		}
 	}
 
 	// Create the Buffers
