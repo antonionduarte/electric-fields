@@ -141,21 +141,12 @@ function resizeCanvas() {
  * @param {int} stride
  * @param {int} offset
 */
-<<<<<<< HEAD
-function draw2DPoints(uniforms, buffer, attribute, srcData) {    
-    for (let i in uniforms) {
-        let location = (uniforms[i])[0];
-        let value = (uniforms[i])[1];
-        gl.uniform1f(location, value);
-		}
-=======
 function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride, offset) {    
 	for (let i in uniforms) {
 		let location = (uniforms[i])[0];
 		let value = (uniforms[i])[1];
 		gl.uniform1f(location, value);
 	}
->>>>>>> 9330173e7bba5fada9cfbc0a0483ba40d5b62723
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 	gl.enableVertexAttribArray(attribute);
