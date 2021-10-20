@@ -5,7 +5,7 @@
 precision highp float;
 
 const float scale = 0.000000000007;
-const float maxSize = 0.25; 
+const float maxSize = 0.1; 
 
 uniform float uTableWidth;
 uniform float uTableHeight;
@@ -59,7 +59,7 @@ void main() {
 				yC = uChargePosition[i].y;
 				charge = uChargePosition[i].z;
 
-				force = (COULOMB * (charge / pow(distance(vec2(xC, yC), vPosition.xy),2.0))) * scale;
+				force = (COULOMB * (charge / pow(distance(vec2(xC, yC), vPosition.xy), 2.0))) * scale;
     
 				vec += (vec2(xC, yC) - vec2(vPosition.x, vPosition.y)) * force;
 			}
