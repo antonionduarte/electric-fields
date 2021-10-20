@@ -36,7 +36,6 @@ vec4 colorize(vec2 f) {
 		return vec4(angle_to_hue(a-TWOPI), 1.0);
 }
 
-
 void main() {
 	vec4 positionModifier = vec4(uTableWidth / 2.0, uTableHeight / 2.0, 1.0, 1.0);
 
