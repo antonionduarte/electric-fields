@@ -77,14 +77,10 @@ void main() {
 			aColor = colorize(vec);
 
 			gl_Position = vec4(xF, yF, 0, 1) / positionModifier;
-		} 	
-		else {
-			gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier;
 		}
 	}
-
-	if (vPosition.z == 0.0) {
+	else {
 		gl_Position = vec4(vPosition.x, vPosition.y, 0, 1) / positionModifier; 
-		aColor = vec4(0.0, 0.0, 0.0, 1.0); 
+		aColor = vec4(0.0, 0.0, 0.0, 1.0);
 	}
 }
