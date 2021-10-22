@@ -158,6 +158,8 @@ function eventListeners() {
 				break;
 		}
 	});
+
+	// Sliders
 	line_slider.oninput = () => {
 		lineLength = line_slider.value;
 	};
