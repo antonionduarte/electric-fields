@@ -45,23 +45,19 @@ void main() {
 	vec4 positionModifier = vec4(uTableWidth / 2.0, uTableHeight / 2.0, 1.0, 1.0);
 
 	if (vPosition.z == 1.0) {
-		int chargeCounter = uChargeAmount;
-		float xF;
-		float yF;
 
 		// If there are charges present on the field.
 		if (uChargeAmount > 0) {
 			vec2 vec;
-			float force, xC, yC, charge;
 
 			for (int i = 0; i < MAX_CHARGES; i++) {
 				if (i >= uChargeAmount) break;
 
-				xC = uChargePosition[i].x;
-				yC = uChargePosition[i].y;
-				charge = uChargePosition[i].z;
+				float xC = uChargePosition[i].x;
+				float yC = uChargePosition[i].y;
+				float charge = uChargePosition[i].z;
 
-				force = (COULOMB * (charge / pow(distance(vec2(xC, yC), vPosition.xy), 2.0))) * finalScale;
+				float force = - (COULOMB * (charge / pow(distance(vec2(xC, yC), vPosition.xy), 2.0))) * finalScale;
 		
 				vec += (vec2(xC, yC) - vec2(vPosition.x, vPosition.y)) * force;
 			}
@@ -71,8 +67,8 @@ void main() {
 				vec = finalLength * vecN;
 			}
 
-			xF = vPosition.x + vec.x;
-			yF = vPosition.y + vec.y;
+			float xF = vPosition.x + vec.x;
+			float yF = vPosition.y + vec.y;
 			
 			aColor = colorize(vec);
 
