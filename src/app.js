@@ -39,6 +39,7 @@ const line_slider = document.getElementById("line-slider");
 const field_slider = document.getElementById("field-slider");
 const rotation_slider = document.getElementById("rotation-slider");
 const sidebar = document.getElementById("sidebar");
+const instructions = document.getElementById("instructions");
 
 // Others
 let sidebarVisible = true;
@@ -78,6 +79,9 @@ function setup(shaders) {
 
 	// Event listeners
 	window.addEventListener("resize", resizeCanvas);
+	window.addEventListener("click", (event) => {
+		instructions.style.display = "None";
+	});
 	canvas.addEventListener("click", (event) => {
 		// Start by getting x and y coordinates inside the canvas element
 		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
@@ -98,7 +102,7 @@ function setup(shaders) {
 				charges = [];
 				break;
 			case 'KeyU':
-				sidebarVisible = !sidebarVisible;
+				toggleSidebar();
 				break;
 		}
 	});
@@ -182,6 +186,15 @@ function resizeCanvas() {
 	canvas.height = window.innerHeight;
 	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
 	gl.viewport(0, 0, canvas.width, canvas.height);
+}
+
+function toggleSidebar() {
+	sidebarVisible = !sidebarVisible;
+	if (sidebarVisible) {
+		sidebar.style.display = "block";
+	} else {
+		sidebar.style.display = "none";
+	}
 }
 
 /**

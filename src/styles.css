@@ -16,6 +16,7 @@ p {
 
 h1, h2 {
 	font-family: "mononoki";
+	color: #E5E9F0;
 }
 
 #sidebar {
@@ -27,6 +28,29 @@ h1, h2 {
 	padding: 5px;
 	border-radius: 10px;
 	text-align: center;
+}
+
+#instructions {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -125px;
+	margin-left: -250px;
+	width: 500px;
+	height: 270px;
+	background: rgba(46, 52, 64, 0.8);
+	padding: 5px;
+	border-radius: 10px;
+	text-align: center;
+}
+
+#usage-instructions {
+	width: 300px;
+	background-color: #5E81AC;
+	color: #5E81AC;
+	border-radius: 5px;
+	margin: 0 auto;
+	position: relative;
 }
 
 /* 
