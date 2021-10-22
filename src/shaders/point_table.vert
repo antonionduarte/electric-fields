@@ -12,6 +12,9 @@ uniform float uTableHeight;
 uniform vec3 uChargePosition[MAX_CHARGES];
 uniform int uChargeAmount;
 
+uniform float uLineLength;
+uniform float uFieldScale;
+
 attribute vec3 vPosition;
 
 varying vec4 aColor;
@@ -37,7 +40,8 @@ vec4 colorize(vec2 f) {
 }
 
 void main() {
-	//gl_PointSize = 0.5;
+	float finalScale = scale * uFieldScale;
+	float finalLength = maxSize * uLineLength;	
 	vec4 positionModifier = vec4(uTableWidth / 2.0, uTableHeight / 2.0, 1.0, 1.0);
 
 	if (vPosition.z == 1.0) {
@@ -57,14 +61,14 @@ void main() {
 				yC = uChargePosition[i].y;
 				charge = uChargePosition[i].z;
 
-				force = (COULOMB * (charge / pow(distance(vec2(xC, yC), vPosition.xy), 2.0))) * scale;
+				force = (COULOMB * (charge / pow(distance(vec2(xC, yC), vPosition.xy), 2.0))) * finalScale;
 		
 				vec += (vec2(xC, yC) - vec2(vPosition.x, vPosition.y)) * force;
 			}
 
-			if (length(vec) > maxSize) {
+			if (length(vec) > finalLength) {
 				vec2 vecN = normalize(vec);
-				vec = maxSize * vecN;
+				vec = finalLength * vecN;
 			}
 
 			xF = vPosition.x + vec.x;

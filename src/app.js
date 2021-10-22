@@ -20,15 +20,19 @@ let uTableHeight;
 let uChargeTableWidth;
 let uChargeTableHeight;
 let uChargeAmount;
+let uLineLength;
+let uFieldScale;
 
 // Constants
 const TABLE_WIDTH = 3.0;
 const GRID_SPACING = 0.05;
 const MAX_CHARGES = 20;
-const ROTATION_MOD = 1.5;
+const ROTATION_MOD = 1;
 
 // HTML variables
 const canvas = document.getElementById("gl-canvas");
+const line_slider = document.getElementById("line-slider");
+const field_slider = document.getElementById("field-slider");
 
 // Table variables
 let table_height;
@@ -37,6 +41,10 @@ let tableVertices = [];
 // Charge variables
 let charges = []
 let cVisible = true;
+
+// Line length and field scaling
+let lineLength = 1.0;
+let fieldScaling = 1.0;
 
 function setup(shaders) {
 	// Setup
@@ -69,11 +77,21 @@ function setup(shaders) {
 			cVisible = !cVisible;
 		}
 	})
+	line_slider.oninput = () => {
+		console.log(line_slider.value);
+		lineLength = line_slider.value;
+	}
+	field_slider.oninput = () => {
+		console.log(field_slider.value);
+		fieldScaling = field_slider.value;
+	}
 
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
 	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
 	uChargeAmount = gl.getUniformLocation(program, "uChargeAmount");
+	uLineLength = gl.getUniformLocation(program, "uLineLength");
+	uFieldScale = gl.getUniformLocation(program, "uFieldScale");
 	uChargeTableWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
 	uChargeTableHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
 
@@ -162,11 +180,12 @@ function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride
 	gl.disableVertexAttribArray(attribute);
 }
 
-/*
- * Rotates the charges,
- * by changing their coordinates,
- * around the center of the table in a circular motion.
-*/
+/**
+ * Function responsible for charge rotation around
+ * the screen center.
+ * 
+ * Rotational speed is modified through the speed_mod field
+ */
 function rotateCharges() {
 	let newCharges = [];
 	let rad = ROTATION_MOD * (Math.PI / 180.0),
@@ -202,7 +221,9 @@ function animate() {
 
 	let uniforms = [
 		[uTableWidth, TABLE_WIDTH], 
-		[uTableHeight, table_height]
+		[uTableHeight, table_height],
+		[uFieldScale, fieldScaling],
+		[uLineLength, lineLength]
 	];
 
 	gl.uniform1i(uChargeAmount, charges.length);
@@ -217,8 +238,8 @@ function animate() {
 
 	rotateCharges();
 
-	// If charge visibility is enabled, draw the charges
-	if(cVisible) {
+	if (cVisible) {
+		// Draw the charges
 		gl.useProgram(chargeProgram);
 
 		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
