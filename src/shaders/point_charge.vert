@@ -5,7 +5,6 @@ attribute vec4 vPosition;
 uniform float uTableWidth;
 uniform float uTableHeight;
 
-
 void main() {
 	gl_PointSize = 20.0;
 

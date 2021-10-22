@@ -292,6 +292,7 @@ function animate() {
 
 	gl.uniform1i(uChargeAmount, charges.length);
 
+	// Send the charge array into the table vertex shader
 	for (let i = 0; i < charges.length; i++) {
 		const uChargePosition = gl.getUniformLocation(program, "uChargePosition[" + i + "]");
 		const charge = vec3(charges[i].x, charges[i].y, charges[i].charge);
@@ -299,11 +300,10 @@ function animate() {
 	}
 	
 	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length, 3, gl.LINES, 0, 0);
-
 	rotateCharges();
 
+	// Draw the charges if they're supposed to be visible
 	if (cVisible) {
-		// Draw the charges
 		gl.useProgram(chargeProgram);
 
 		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];

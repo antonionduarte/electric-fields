@@ -17,7 +17,7 @@ uniform float uFieldScale;
 
 attribute vec3 vPosition;
 
-varying vec4 aColor;
+varying vec4 fColor;
 
 /* Converts angle to hue; returns RGB
 / colors corresponding to (angle mod TWOPI):
@@ -44,8 +44,8 @@ void main() {
 	float finalLength = maxSize * uLineLength;	
 	vec4 positionModifier = vec4(uTableWidth / 2.0, uTableHeight / 2.0, 1.0, 1.0);
 
+	// If it's one of the points that are "allowed" to move
 	if (vPosition.z == 1.0) {
-
 		// If there are charges present on the field.
 		if (uChargeAmount > 0) {
 			vec2 vec;
@@ -62,6 +62,7 @@ void main() {
 				vec += (vec2(xC, yC) - vec2(vPosition.x, vPosition.y)) * force;
 			}
 
+			// Limit the size of the lines
 			if (length(vec) > finalLength) {
 				vec2 vecN = normalize(vec);
 				vec = finalLength * vecN;
@@ -70,13 +71,15 @@ void main() {
 			float xF = vPosition.x + vec.x;
 			float yF = vPosition.y + vec.y;
 			
-			aColor = colorize(vec);
+			fColor = colorize(vec);
 
 			gl_Position = vec4(xF, yF, 1.0, 1.0) / positionModifier;
 		}
 	}
+
+	// If it's one of the points that aren't "allowed" to move
 	else {
 		gl_Position = vec4(vPosition.x, vPosition.y, 1.0, 1.0) / positionModifier; 
-		aColor = vec4(0.0, 0.0, 0.0, 0.0);
+		fColor = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 }
