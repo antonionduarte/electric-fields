@@ -71,14 +71,14 @@ function setup(shaders) {
 	resizeCanvas();
 	
 	// Build programs
-	program = buildProgramFromSources(gl, shaders["point_table.vert"], shaders["point_table.frag"]);
-	chargeProgram = buildProgramFromSources(gl, shaders["point_charge.vert"], shaders["point_charge.frag"]);
+	program = buildProgramFromSources(gl, shaders["point-grid.vert"], shaders["point-grid.frag"]);
+	chargeProgram = buildProgramFromSources(gl, shaders["charge.vert"], shaders["charge.frag"]);
 
 	// Attrib locations
 	vPosition = gl.getAttribLocation(program, "vPosition");
 	vChargePosition = gl.getAttribLocation(chargeProgram, "vPosition");
 
-	// Event listeners
+	// Event listener setup
 	eventListeners();
 
 	// Uniform Locations
@@ -202,9 +202,11 @@ function resizeCanvas() {
  * @param {boolean} shiftKey indicates if the shiftkey was pressed or not
  */
 function addCharge(x, y, shiftKey) {
-	let newCharge = [vec2(x, y)];
+	let chargeVal = shiftKey ? - 1.0 : 1.0;
+
+	let newCharge = [vec3(x, y, chargeVal)];
 	
-	charges.push({x: x, y: y, charge: shiftKey ? - 1.0 : 1.0});
+	charges.push({x: x, y: y, charge: chargeVal});
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newCharge));
@@ -256,7 +258,7 @@ function rotateCharges() {
 		charges[i].x = (x * cos) - charge * (y * sin);
 		charges[i].y = (charge * x * sin) + (y * cos);
 
-		newCharges.push(vec2(charges[i].x, charges[i].y))
+		newCharges.push(vec3(charges[i].x, charges[i].y, charge))
 	}
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
@@ -307,10 +309,10 @@ function animate() {
 		gl.useProgram(chargeProgram);
 
 		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
-		drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 0, 0);
+		drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 3, gl.POINTS, 0, 0);
 	}
 
 	window.requestAnimationFrame(animate);
 }
 
-loadShadersFromURLS(["point_table.vert", "point_table.frag", "point_charge.vert", "point_charge.frag"]).then(shaders => setup(shaders));
+loadShadersFromURLS(["point-grid.vert", "point-grid.frag", "charge.vert", "charge.frag"]).then(shaders => setup(shaders));
