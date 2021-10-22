@@ -1,6 +1,11 @@
 import { loadShadersFromURLS, loadShadersFromScripts, setupWebGL, buildProgramFromSources } from "../libs/utils.js";
 import { vec2, vec3, vec4, flatten, sizeof, radians  } from "../libs/MV.js"
 
+/** 
+ * @author Manuel Pereira - 57973
+ * @author Antonio Duarte - 58278
+*/
+
 /** @type {WebGLRenderingContext} */
 var gl;
 var program;
@@ -52,6 +57,12 @@ let cVisible = true;
 let lineLength = 1.0;
 let fieldScaling = 1.0;
 
+/**
+ * Single-call setup function of all
+ * 
+ *
+ * @param {*} shaders 
+ */
 function setup(shaders) {
 	// Setup
 	gl = setupWebGL(canvas);
@@ -82,16 +93,16 @@ function setup(shaders) {
 		if (event.code == 'Space') {
 			cVisible = !cVisible;
 		}
-	})
+	});
 	line_slider.oninput = () => {
 		lineLength = line_slider.value;
-	}
+	};
 	field_slider.oninput = () => {
 		fieldScaling = field_slider.value;
-	}
+	};
 	rotation_slider.oninput = () => {
 		rotationMod = rotation_slider.value;
-	}
+	};	
 
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
@@ -105,13 +116,14 @@ function setup(shaders) {
 	// Create the table
 	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
 
-	let rand;
+	let randX, randY;
 	for (let x = - (GRID_SPACING / 2 + TABLE_WIDTH / 2); x <= TABLE_WIDTH / 2; x += GRID_SPACING) {
 		for (let y = - (GRID_SPACING / 2 + table_height / 2); y <= table_height / 2; y += GRID_SPACING) {
-			rand = (Math.random() - 0.5) * GRID_SPACING;
+			randX = (Math.random() - 0.5) * GRID_SPACING;
+			randY = (Math.random() - 0.5) * GRID_SPACING;
 
-			tableVertices.push(vec3(x + rand, y + rand, 1.0));
-			tableVertices.push(vec3(x + rand, y + rand, 0.0));
+			tableVertices.push(vec3(x + randX, y + randY, 1.0));
+			tableVertices.push(vec3(x + randX, y + randY, 0.0));
 		}
 	}
 
@@ -196,8 +208,8 @@ function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride
 function rotateCharges() {
 	let newCharges = [];
 	let rad = rotationMod * (Math.PI / 180.0),
-		s = Math.sin(rad),
-		c = Math.cos(rad);
+		sin = Math.sin(rad),
+		cos = Math.cos(rad);
 
 	for (let i in charges) {
 		let x = charges[i].x;
@@ -205,8 +217,8 @@ function rotateCharges() {
 		let charge = charges[i].charge;
 
 		// Rotated positions
-		charges[i].x = (x * c) - charge * (y * s);
-		charges[i].y = (charge * x * s) + (y * c);
+		charges[i].x = (x * cos) - charge * (y * sin);
+		charges[i].y = (charge * x * sin) + (y * cos);
 
 		newCharges.push(vec2(charges[i].x, charges[i].y))
 	}
