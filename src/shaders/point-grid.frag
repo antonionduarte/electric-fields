@@ -1,7 +1,12 @@
+/**
+ * Author: António Nunes Duarte
+ * Author: Manuel Pereira
+ */
+
 precision highp float;
 
-varying vec4 aColor;
+varying vec4 fColor;
 
 void main() {
-	gl_FragColor = aColor;
+	gl_FragColor = fColor;
 }

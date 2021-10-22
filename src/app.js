@@ -3,7 +3,7 @@ import { vec2, vec3, vec4, flatten, sizeof, radians  } from "../libs/MV.js"
 
 /** 
  * @author Manuel Pereira - 57973
- * @author António Duarte - 58278
+ * @author António Nunes Duarte - 58278
 */
 
 /** @type {WebGLRenderingContext} */
@@ -45,7 +45,6 @@ const close = document.getElementById("close");
 // Others
 let sidebarVisible = true;
 let rotationMod = 1;
-
 
 // Table variables
 let table_height;
@@ -199,7 +198,7 @@ function resizeCanvas() {
  * Adds a new vec2 to the array of charges.
  * @param {float} x the x coordinate of the charge.
  * @param {float} y the y coordinate of the charge.
- * @param {boolean} shiftKey indicates if the shiftkey was pressed or not
+ * @param {boolean} shiftKey indicates if the shiftkey was pressed or not.
  */
 function addCharge(x, y, shiftKey) {
 	let chargeVal = shiftKey ? - 1.0 : 1.0;
@@ -241,7 +240,7 @@ function drawPoints(uniforms, buffer, attribute, amount, elemSize, glMode, strid
  * Function responsible for charge rotation around
  * the screen center.
  * 
- * Rotational speed is modified through the speed_mod field
+ * Rotational speed is modified through the speed_mod field.
  */
 function rotateCharges() {
 	let newCharges = [];
@@ -294,6 +293,7 @@ function animate() {
 
 	gl.uniform1i(uChargeAmount, charges.length);
 
+	// Send the charge array into the table vertex shader
 	for (let i = 0; i < charges.length; i++) {
 		const uChargePosition = gl.getUniformLocation(program, "uChargePosition[" + i + "]");
 		const charge = vec3(charges[i].x, charges[i].y, charges[i].charge);
@@ -301,11 +301,10 @@ function animate() {
 	}
 	
 	drawPoints(uniforms, tableBuffer, vPosition, tableVertices.length, 3, gl.LINES, 0, 0);
-
 	rotateCharges();
 
+	// Draw the charges if they're supposed to be visible
 	if (cVisible) {
-		// Draw the charges
 		gl.useProgram(chargeProgram);
 
 		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
