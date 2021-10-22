@@ -7,7 +7,7 @@ uniform float uTableHeight;
 
 
 void main() {
-	gl_PointSize = 4.0;
+	gl_PointSize = 20.0;
 
 	gl_Position.x = (vPosition.x / (uTableWidth / 2.0));
 	gl_Position.y = (vPosition.y / (uTableHeight / 2.0));
