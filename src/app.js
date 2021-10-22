@@ -79,43 +79,7 @@ function setup(shaders) {
 	vChargePosition = gl.getAttribLocation(chargeProgram, "vPosition");
 
 	// Event listeners
-	window.addEventListener("resize", resizeCanvas);
-	close.addEventListener("click", (event) => {
-		instructions.style.display = "None";
-	});
-	canvas.addEventListener("click", (event) => {
-		// Start by getting x and y coordinates inside the canvas element
-		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
-		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
-
-		if (charges.length + 1 <= MAX_CHARGES) {
-			addCharge(x, y, event.shiftKey);
-		} else {
-			alert("Charge limit exceeded");
-		}
-	});
-	window.addEventListener("keydown", (event) => {
-		switch (event.code) {
-			case 'Space':
-				cVisible = !cVisible;
-				break;
-			case 'Backspace':
-				charges = [];
-				break;
-			case 'KeyU':
-				toggleSidebar();
-				break;
-		}
-	});
-	line_slider.oninput = () => {
-		lineLength = line_slider.value;
-	};
-	field_slider.oninput = () => {
-		fieldScaling = field_slider.value;
-	};
-	rotation_slider.oninput = () => {
-		rotationMod = rotation_slider.value;
-	};	
+	eventListeners();
 
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
@@ -163,6 +127,73 @@ function setup(shaders) {
 }
 
 /**
+ * Function responsible for initializing all event listeners.
+*/
+function eventListeners() {
+	window.addEventListener("resize", resizeCanvas);
+	close.addEventListener("click", (event) => {
+		instructions.style.display = "None";
+	});
+	canvas.addEventListener("click", (event) => {
+		// Start by getting x and y coordinates inside the canvas element
+		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
+		const y = - ((event.offsetY / canvas.height * table_height) - table_height / 2);
+
+		if (charges.length + 1 <= MAX_CHARGES) {
+			addCharge(x, y, event.shiftKey);
+		} else {
+			alert("Charge limit exceeded");
+		}
+	});
+	window.addEventListener("keydown", (event) => {
+		switch (event.code) {
+			case 'Space':
+				cVisible = !cVisible;
+				break;
+			case 'Backspace':
+				charges = [];
+				break;
+			case 'KeyU':
+				toggleSidebar();
+				break;
+		}
+	});
+	line_slider.oninput = () => {
+		lineLength = line_slider.value;
+	};
+	field_slider.oninput = () => {
+		fieldScaling = field_slider.value;
+	};
+	rotation_slider.oninput = () => {
+		rotationMod = rotation_slider.value;
+	};
+}
+
+/**
+ * Function that toggles the sidebar visibility.
+*/
+function toggleSidebar() {
+	sidebarVisible = !sidebarVisible;
+	if (sidebarVisible) {
+		sidebar.style.display = "block";
+	} else {
+		sidebar.style.display = "none";
+	}
+}
+
+/**
+ * Function that resizes the canvas correctly, by
+ * updating the width of the canvas, the height of the canvas,
+ * the height of the table and resetting the gl viewport with those new values.
+ */
+function resizeCanvas() {
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
+	gl.viewport(0, 0, canvas.width, canvas.height);
+}
+
+/**
  * Adds a new vec2 to the array of charges.
  * @param {float} x the x coordinate of the charge.
  * @param {float} y the y coordinate of the charge.
@@ -175,27 +206,6 @@ function addCharge(x, y, shiftKey) {
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, (charges.length - 1) * 2 * 4, flatten(newCharge));
-}
-
-/**
- * Functions that resizes the canvas correctly, by
- * updating the width of the canvas, the height of the canvas,
- * the height of the table and resetting the gl viewport with those new values.
- */
-function resizeCanvas() {
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
-	table_height = (TABLE_WIDTH / canvas.width) * canvas.height;
-	gl.viewport(0, 0, canvas.width, canvas.height);
-}
-
-function toggleSidebar() {
-	sidebarVisible = !sidebarVisible;
-	if (sidebarVisible) {
-		sidebar.style.display = "block";
-	} else {
-		sidebar.style.display = "none";
-	}
 }
 
 /**
@@ -297,6 +307,7 @@ function animate() {
 		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
 		drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 0, 0);
 	}
+
 	window.requestAnimationFrame(animate);
 }
 
