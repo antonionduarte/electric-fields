@@ -217,8 +217,8 @@ function animate() {
 
 	rotateCharges();
 
+	// If charge visibility is enabled, draw the charges
 	if(cVisible) {
-		// Draw the charges
 		gl.useProgram(chargeProgram);
 
 		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
