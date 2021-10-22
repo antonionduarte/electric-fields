@@ -142,6 +142,8 @@ function setup(shaders) {
 	// Setup the viewport and background color
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.enable(gl.BLEND);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 	// Call animate for the first time
 	animate();
@@ -176,16 +178,16 @@ function resizeCanvas() {
 
 /**
  * Function responsible for drawing the points or lines between two vertices.
- * @param {Array} uniforms
- * @param {} buffer
- * @param {} attribute
- * @param {int} amount
- * @param {int} vecSize
- * @param {} glMode
- * @param {int} stride
- * @param {int} offset
+ * @param {Array} uniforms array of uniforms and corresponding values (only simple uniform1f).
+ * @param {WebGLBuffer} buffer the buffer to use.
+ * @param {number} attribute the attribute to use.
+ * @param {int} amount the amount of objects to draw.
+ * @param {int} elemSize the size in bytes of each element to draw.
+ * @param {number} glMode the glMode to draw with (could be gl.LINES, gl.POINTS etc...)
+ * @param {int} stride the stride inside the buffer between each element.
+ * @param {int} offset the offset inside the buffer before the start of the element.
 */
-function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride, offset) {    
+function drawPoints(uniforms, buffer, attribute, amount, elemSize, glMode, stride, offset) {    
 	for (let i in uniforms) {
 		let location = (uniforms[i])[0];
 		let value = (uniforms[i])[1];
@@ -194,7 +196,7 @@ function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 	gl.enableVertexAttribArray(attribute);
-	gl.vertexAttribPointer(attribute, vecSize, gl.FLOAT, false, stride, offset);
+	gl.vertexAttribPointer(attribute, elemSize, gl.FLOAT, false, stride, offset);
 	gl.drawArrays(glMode, 0, amount)
 	gl.disableVertexAttribArray(attribute);
 }

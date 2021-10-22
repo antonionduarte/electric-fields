@@ -72,11 +72,11 @@ void main() {
 			
 			aColor = colorize(vec);
 
-			gl_Position = vec4(xF, yF, 0.0, 1.0) / positionModifier;
+			gl_Position = vec4(xF, yF, 1.0, 1.0) / positionModifier;
 		}
 	}
 	else {
 		gl_Position = vec4(vPosition.x, vPosition.y, 1.0, 1.0) / positionModifier; 
-		aColor = vec4(0.0, 0.0, 0.0, 1.0);
+		aColor = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 }
