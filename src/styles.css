@@ -6,3 +6,67 @@ html, body {
 	overflow: hidden; /* Disable scrollbars */
 	display: block;  /* No floating content on sides */
 }
+
+p {
+	line-height: 1.5;
+	font-size: 1rem;
+	font-family: sans-serif;
+	color: #E5E9F0;
+}
+
+h1, h2 {
+	font-family: "mononoki";
+}
+
+#sidebar {
+	position: fixed; 
+	top: 10px; 
+	right: 10px; 
+	width: 250px; 
+	background: rgba(46, 52, 64, 0.8);
+	padding: 5px;
+	border-radius: 10px;
+	text-align: center;
+}
+
+/* 
+ * The slider styling code is an edited version from:
+ * https://www.w3schools.com/howto/howto_js_rangeslider.asp
+*/
+
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 95%; /* Full-width */
+  height: 15px; /* Specified height */
+  background: #D8DEE9; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+	border-radius: 6px;
+	/*position: relative; */
+}
+
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #5E81AC;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #5E81AC;
+  cursor: pointer;
+}

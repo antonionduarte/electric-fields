@@ -20,6 +20,8 @@ let uTableHeight;
 let uChargeTableWidth;
 let uChargeTableHeight;
 let uChargeAmount;
+let uLineLength;
+let uFieldScale;
 
 // Constants
 const TABLE_WIDTH = 3.0;
@@ -29,6 +31,8 @@ const ROTATION_MOD = 1.5;
 
 // HTML variables
 const canvas = document.getElementById("gl-canvas");
+const line_slider = document.getElementById("line-slider");
+const field_slider = document.getElementById("field-slider");
 
 // Table variables
 let table_height;
@@ -37,6 +41,10 @@ let tableVertices = [];
 // Charge variables
 let charges = []
 let cVisible = true;
+
+// Line length and field scaling
+let lineLength = 1.0;
+let fieldScaling = 1.0;
 
 function setup(shaders) {
 	// Setup
@@ -69,11 +77,21 @@ function setup(shaders) {
 			cVisible = !cVisible;
 		}
 	})
+	line_slider.oninput = () => {
+		console.log(line_slider.value);
+		lineLength = line_slider.value;
+	}
+	field_slider.oninput = () => {
+		console.log(field_slider.value);
+		fieldScaling = field_slider.value;
+	}
 
 	// Uniform Locations
 	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
 	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
 	uChargeAmount = gl.getUniformLocation(program, "uChargeAmount");
+	uLineLength = gl.getUniformLocation(program, "uLineLength");
+	uFieldScale = gl.getUniformLocation(program, "uFieldScale");
 	uChargeTableWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
 	uChargeTableHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
 
@@ -202,7 +220,9 @@ function animate() {
 
 	let uniforms = [
 		[uTableWidth, TABLE_WIDTH], 
-		[uTableHeight, table_height]
+		[uTableHeight, table_height],
+		[uFieldScale, fieldScaling],
+		[uLineLength, lineLength]
 	];
 
 	gl.uniform1i(uChargeAmount, charges.length);
