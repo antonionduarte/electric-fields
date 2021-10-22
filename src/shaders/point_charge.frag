@@ -1,3 +1,8 @@
+/**
+ * Author: António Nunes Duarte
+ * Author: Manuel Pereira
+ */
+
 precision highp float;
 
 void main() {

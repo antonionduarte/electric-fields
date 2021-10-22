@@ -3,7 +3,7 @@ import { vec2, vec3, vec4, flatten, sizeof, radians  } from "../libs/MV.js"
 
 /** 
  * @author Manuel Pereira - 57973
- * @author António Duarte - 58278
+ * @author António Nunes Duarte - 58278
 */
 
 /** @type {WebGLRenderingContext} */
@@ -45,7 +45,6 @@ const close = document.getElementById("close");
 // Others
 let sidebarVisible = true;
 let rotationMod = 1;
-
 
 // Table variables
 let table_height;
@@ -199,7 +198,7 @@ function resizeCanvas() {
  * Adds a new vec2 to the array of charges.
  * @param {float} x the x coordinate of the charge.
  * @param {float} y the y coordinate of the charge.
- * @param {boolean} shiftKey indicates if the shiftkey was pressed or not
+ * @param {boolean} shiftKey indicates if the shiftkey was pressed or not.
  */
 function addCharge(x, y, shiftKey) {
 	let newCharge = [vec2(x, y)];
@@ -239,7 +238,7 @@ function drawPoints(uniforms, buffer, attribute, amount, elemSize, glMode, strid
  * Function responsible for charge rotation around
  * the screen center.
  * 
- * Rotational speed is modified through the speed_mod field
+ * Rotational speed is modified through the speed_mod field.
  */
 function rotateCharges() {
 	let newCharges = [];
