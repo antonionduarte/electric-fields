@@ -108,4 +108,5 @@ h1, h2 {
   border-radius: 50%;
   background: #5E81AC;
   cursor: pointer;
+	border: none;
 }
