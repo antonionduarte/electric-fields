@@ -3,7 +3,7 @@ import { vec2, vec3, vec4, flatten, sizeof, radians  } from "../libs/MV.js"
 
 /** 
  * @author Manuel Pereira - 57973
- * @author Antonio Duarte - 58278
+ * @author António Duarte - 58278
 */
 
 /** @type {WebGLRenderingContext} */
@@ -90,8 +90,16 @@ function setup(shaders) {
 		}
 	});
 	window.addEventListener("keydown", (event) => {
-		if (event.code == 'Space') {
-			cVisible = !cVisible;
+		switch (event.code) {
+			case 'Space':
+				cVisible = !cVisible;
+				break;
+			case 'Backspace':
+				charges = [];
+				break;
+			case 'KeyU':
+				sidebarVisible = !sidebarVisible;
+				break;
 		}
 	});
 	line_slider.oninput = () => {
@@ -227,6 +235,15 @@ function rotateCharges() {
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(newCharges));
+}
+
+/**
+ * Function responsible of clearing the charges.
+ */
+function clearCharges() {
+	charges = [];
+	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, 3 * 4 * MAX_CHARGES, gl.STATIC_DRAW);
 }
 
 /*
