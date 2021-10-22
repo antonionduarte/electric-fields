@@ -53,6 +53,21 @@ h1, h2 {
 	position: relative;
 }
 
+#close {
+	position: absolute;
+	size: 10px;
+	top: 0px;
+	right: 0px;
+	margin: 10px;
+	border-radius: 5px;
+	background-color: #434C5E;
+	opacity: 0.7;
+}
+
+#close:hover {
+	opacity: 1;
+}
+
 /* 
  * The slider styling code is an edited version from:
  * https://www.w3schools.com/howto/howto_js_rangeslider.asp

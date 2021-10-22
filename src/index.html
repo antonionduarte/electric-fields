@@ -7,10 +7,16 @@
 		<link rel="stylesheet" href="fonts.css">
 	</head>
 	<body>
+		<script type="module" src="./app.js"></script>
 		<div id="instructions">
 			<div id="usage-instructions">
 				<h2>Usage Instructions:</h2>
 			</div>
+
+			<div id="close">
+				<img id="close-icon" src="/src/svgs/cross.svg" width="45px" alt="close">
+			</div>
+
 			<p>Add a Positive Charge: <b>Click</b></p>
 			<p>Add a Negative Charge: <b>Shift + Click</b></p>
 			<p>Hide the Charges: <b>Spacebar</b></p>
@@ -18,7 +24,6 @@
 			<p>Hide the Sidebar: <b>U</b></p>
 			<p></p>
 		</div>
-		<script type="module" src="./app.js"></script>
 		<canvas id="gl-canvas" width="512" height="512"></canvas>
 		<div id="sidebar">
 			<p>Line Length:</p>

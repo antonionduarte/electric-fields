@@ -40,6 +40,7 @@ const field_slider = document.getElementById("field-slider");
 const rotation_slider = document.getElementById("rotation-slider");
 const sidebar = document.getElementById("sidebar");
 const instructions = document.getElementById("instructions");
+const close = document.getElementById("close");
 
 // Others
 let sidebarVisible = true;
@@ -79,7 +80,7 @@ function setup(shaders) {
 
 	// Event listeners
 	window.addEventListener("resize", resizeCanvas);
-	window.addEventListener("click", (event) => {
+	close.addEventListener("click", (event) => {
 		instructions.style.display = "None";
 	});
 	canvas.addEventListener("click", (event) => {
