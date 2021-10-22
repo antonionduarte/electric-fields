@@ -27,12 +27,18 @@ let uFieldScale;
 const TABLE_WIDTH = 3.0;
 const GRID_SPACING = 0.05;
 const MAX_CHARGES = 20;
-const ROTATION_MOD = 1;
 
 // HTML variables
 const canvas = document.getElementById("gl-canvas");
 const line_slider = document.getElementById("line-slider");
 const field_slider = document.getElementById("field-slider");
+const rotation_slider = document.getElementById("rotation-slider");
+const sidebar = document.getElementById("sidebar");
+
+// Others
+let sidebarVisible = true;
+let rotationMod = 1;
+
 
 // Table variables
 let table_height;
@@ -73,17 +79,18 @@ function setup(shaders) {
 		}
 	});
 	window.addEventListener("keydown", (event) => {
-		if(event.code == 'Space') {
+		if (event.code == 'Space') {
 			cVisible = !cVisible;
 		}
 	})
 	line_slider.oninput = () => {
-		console.log(line_slider.value);
 		lineLength = line_slider.value;
 	}
 	field_slider.oninput = () => {
-		console.log(field_slider.value);
 		fieldScaling = field_slider.value;
+	}
+	rotation_slider.oninput = () => {
+		rotationMod = rotation_slider.value;
 	}
 
 	// Uniform Locations
@@ -188,7 +195,7 @@ function drawPoints(uniforms, buffer, attribute, amount, vecSize, glMode, stride
  */
 function rotateCharges() {
 	let newCharges = [];
-	let rad = ROTATION_MOD * (Math.PI / 180.0),
+	let rad = rotationMod * (Math.PI / 180.0),
 		s = Math.sin(rad),
 		c = Math.cos(rad);
 
