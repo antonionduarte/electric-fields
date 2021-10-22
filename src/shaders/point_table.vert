@@ -3,7 +3,6 @@
  * Author: Manuel Pereira
  */ 
 
-
 #define TWOPI 6.28318530718
 #define COULOMB 8987551792.3
 #define MAX_CHARGES 20
