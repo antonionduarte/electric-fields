@@ -8,7 +8,7 @@ import { vec2, vec3, vec4, flatten, sizeof, radians  } from "../libs/MV.js"
 
 /** @type {WebGLRenderingContext} */
 var gl;
-var program;
+var gridProgram;
 var chargeProgram;
 
 // Buffers
@@ -45,6 +45,7 @@ const close = document.getElementById("close");
 // Others
 let sidebarVisible = true;
 let rotationMod = 1;
+let inversionMod = 1;
 
 // Table variables
 let table_height;
@@ -70,22 +71,22 @@ function setup(shaders) {
 	resizeCanvas();
 	
 	// Build programs
-	program = buildProgramFromSources(gl, shaders["point-grid.vert"], shaders["point-grid.frag"]);
+	gridProgram = buildProgramFromSources(gl, shaders["point-grid.vert"], shaders["point-grid.frag"]);
 	chargeProgram = buildProgramFromSources(gl, shaders["charge.vert"], shaders["charge.frag"]);
 
 	// Attrib locations
-	vPosition = gl.getAttribLocation(program, "vPosition");
+	vPosition = gl.getAttribLocation(gridProgram, "vPosition");
 	vChargePosition = gl.getAttribLocation(chargeProgram, "vPosition");
 
 	// Event listener setup
 	eventListeners();
 
 	// Uniform Locations
-	uTableWidth = gl.getUniformLocation(program, "uTableWidth");
-	uTableHeight = gl.getUniformLocation(program, "uTableHeight");
-	uChargeAmount = gl.getUniformLocation(program, "uChargeAmount");
-	uLineLength = gl.getUniformLocation(program, "uLineLength");
-	uFieldScale = gl.getUniformLocation(program, "uFieldScale");
+	uTableWidth = gl.getUniformLocation(gridProgram, "uTableWidth");
+	uTableHeight = gl.getUniformLocation(gridProgram, "uTableHeight");
+	uChargeAmount = gl.getUniformLocation(gridProgram, "uChargeAmount");
+	uLineLength = gl.getUniformLocation(gridProgram, "uLineLength");
+	uFieldScale = gl.getUniformLocation(gridProgram, "uFieldScale");
 	uChargeTableWidth = gl.getUniformLocation(chargeProgram, "uTableWidth");
 	uChargeTableHeight = gl.getUniformLocation(chargeProgram, "uTableHeight");
 
@@ -150,10 +151,13 @@ function eventListeners() {
 				cVisible = !cVisible;
 				break;
 			case 'Backspace':
-				charges = [];
+				clearCharges();
 				break;
 			case 'KeyU':
 				toggleSidebar();
+				break;
+			case 'KeyI':
+				inversionMod = -inversionMod;
 				break;
 		}
 	});
@@ -251,13 +255,13 @@ function rotateCharges() {
 	for (let i in charges) {
 		let x = charges[i].x;
 		let y = charges[i].y;
-		let charge = charges[i].charge;
+		let charge = charges[i].charge * inversionMod;
 
 		// Rotated positions
 		charges[i].x = (x * cos) - charge * (y * sin);
 		charges[i].y = (charge * x * sin) + (y * cos);
 
-		newCharges.push(vec3(charges[i].x, charges[i].y, charge))
+		newCharges.push(vec3(charges[i].x, charges[i].y, charges[i].charge))
 	}
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
@@ -282,7 +286,7 @@ function animate() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	// Draw the table
-	gl.useProgram(program);
+	gl.useProgram(gridProgram);
 
 	let uniforms = [
 		[uTableWidth, TABLE_WIDTH], 
@@ -295,7 +299,7 @@ function animate() {
 
 	// Send the charge array into the table vertex shader
 	for (let i = 0; i < charges.length; i++) {
-		const uChargePosition = gl.getUniformLocation(program, "uChargePosition[" + i + "]");
+		const uChargePosition = gl.getUniformLocation(gridProgram, "uChargePosition[" + i + "]");
 		const charge = vec3(charges[i].x, charges[i].y, charges[i].charge);
 		gl.uniform3fv(uChargePosition, flatten(charge));
 	}

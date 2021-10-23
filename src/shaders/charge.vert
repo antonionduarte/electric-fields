@@ -5,7 +5,7 @@
 
 precision highp float;
 
-attribute vec4 vPosition;
+attribute vec3 vPosition;
 
 uniform float uTableWidth;
 uniform float uTableHeight;
