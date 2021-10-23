@@ -29,6 +29,7 @@ h1, h2 {
 	top: 10px; 
 	right: 10px; 
 	width: 250px; 
+	height: 255px;
 	background: rgba(46, 52, 64, 0.8);
 	padding: 5px;
 	border-radius: 10px;
@@ -39,10 +40,10 @@ h1, h2 {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	margin-top: -135px;
+	margin-top: -152.5px;
 	margin-left: -250px;
 	width: 500px;
-	height: 270px;
+	height: 305px;
 	background: rgba(46, 52, 64, 0.8);
 	padding: 5px;
 	border-radius: 10px;
