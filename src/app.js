@@ -18,6 +18,7 @@ var chargeBuffer;
 // GLSL Attributes 
 let vPosition;
 let vChargePosition;
+let vCharge;
 
 // GLSL Uniforms
 let uTableWidth;
@@ -77,6 +78,7 @@ function setup(shaders) {
 	// Attrib locations
 	vPosition = gl.getAttribLocation(gridProgram, "vPosition");
 	vChargePosition = gl.getAttribLocation(chargeProgram, "vPosition");
+	vCharge = gl.getAttribLocation(chargeProgram, "vCharge");
 
 	// Event listener setup
 	eventListeners();
@@ -220,6 +222,46 @@ function addCharge(x, y, shiftKey) {
 }
 
 /**
+ * Function responsible of removing the charges from the field.
+ * 
+ * Charges = [] would be enough to end the draw, although solely due to the update required by rotate_charges(). 
+ *  So, to provide a safe, nonreliant clear, the WebGL buffer is 'reset'.
+ */
+ function clearCharges() {
+	charges = [];
+	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, 3 * 4 * MAX_CHARGES, gl.STATIC_DRAW);
+}
+
+/**
+ * Function responsible for charge rotation around
+ * the screen center.
+ * 
+ * Rotational speed is further modified through the speed_mod variable.
+ */
+ function rotateCharges() {
+	let newCharges = [];
+	let rad = rotationMod * (Math.PI / 180.0),
+		sin = Math.sin(rad),
+		cos = Math.cos(rad);
+
+	for (let i in charges) {
+		let x = charges[i].x;
+		let y = charges[i].y;
+		let charge = charges[i].charge * inversionMod;
+
+		// Rotated positions
+		charges[i].x = (x * cos) - charge * (y * sin);
+		charges[i].y = (charge * x * sin) + (y * cos);
+
+		newCharges.push(vec3(charges[i].x, charges[i].y, charges[i].charge))
+	}
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(newCharges));
+}
+
+/**
  * Passes the required arguments to WebGL, such as buffer, attribues, glMode, and further fields.
  * And, calls the draw function.
  * 
@@ -244,46 +286,6 @@ function drawPoints(uniforms, buffer, attribute, amount, elemSize, glMode, strid
 	gl.vertexAttribPointer(attribute, elemSize, gl.FLOAT, false, stride, offset);
 	gl.drawArrays(glMode, 0, amount)
 	gl.disableVertexAttribArray(attribute);
-}
-
-/**
- * Function responsible for charge rotation around
- * the screen center.
- * 
- * Rotational speed is further modified through the speed_mod variable.
- */
-function rotateCharges() {
-	let newCharges = [];
-	let rad = rotationMod * (Math.PI / 180.0),
-		sin = Math.sin(rad),
-		cos = Math.cos(rad);
-
-	for (let i in charges) {
-		let x = charges[i].x;
-		let y = charges[i].y;
-		let charge = charges[i].charge * inversionMod;
-
-		// Rotated positions
-		charges[i].x = (x * cos) - charge * (y * sin);
-		charges[i].y = (charge * x * sin) + (y * cos);
-
-		newCharges.push(vec3(charges[i].x, charges[i].y, charges[i].charge))
-	}
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
-	gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(newCharges));
-}
-
-/**
- * Function responsible of removing the charges from the field.
- * 
- * Charges = [] would be enough to end the draw, although solely due to the update required by rotate_charges(). 
- *  So, to provide a safe, nonreliant clear, the WebGL buffer is 'reset'.
- */
-function clearCharges() {
-	charges = [];
-	gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, 3 * 4 * MAX_CHARGES, gl.STATIC_DRAW);
 }
 
 /*
@@ -320,8 +322,16 @@ function animate() {
 	if (cVisible) {
 		gl.useProgram(chargeProgram);
 
+		gl.bindBuffer(gl.ARRAY_BUFFER, chargeBuffer);
+
+		gl.enableVertexAttribArray(vCharge);
+		gl.vertexAttribPointer(vCharge, 1, gl.FLOAT, false, 3 * 4, 2 * 4);
+
 		uniforms = [[uChargeTableWidth, TABLE_WIDTH], [uChargeTableHeight, table_height]];
-		drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 3, gl.POINTS, 0, 0);
+
+		drawPoints(uniforms, chargeBuffer, vChargePosition, charges.length, 2, gl.POINTS, 3 * 4, 0);
+
+		gl.disableVertexAttribArray(vCharge);
 	}
 
 	window.requestAnimationFrame(animate);

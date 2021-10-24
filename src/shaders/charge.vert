@@ -5,7 +5,8 @@
 
 precision highp float;
 
-attribute vec3 vPosition;
+attribute vec2 vPosition;
+attribute float vCharge;
 
 uniform float uTableWidth;
 uniform float uTableHeight;
@@ -20,5 +21,5 @@ void main() {
 	gl_Position.y = (vPosition.y / (uTableHeight / 2.0));
 	gl_Position.zw = vec2(1.0, 1.0);
 	
-	fCharge = vPosition.z;
+	fCharge = vCharge;
 }
