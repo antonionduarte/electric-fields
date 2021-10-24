@@ -74,7 +74,7 @@ Tasked with drawing the two points for each position, and the line connecting th
 \begin{itemize}
     \item \textbf{float uTableWidth}: World width limit, used for world-coordinate transmortion to clip coordinates.
     \item \textbf{float uTableHeight}: World height limit, used for world-coordinate transformation to clip coordinates.
-    \item \textbf{vec3 uChargePosition[MAX\_CHARGES]}: Vector matrix containing the position oof all charges, and their effective charge on the z field.
+    \item \textbf{vec3 uChargePosition[MAX\_CHARGES]}: Vector matrix containing the position of all charges, and their effective charge on the z field.
     \item \textbf{int uChargeAmount}: Amount of charges present in the afore-mentioned matrix (serves as loop upper bound).
     \item \textbf{float uLineLength}: Upper limit of line length, affected by a slider.
     \item \textbf{float uFieldScale}: Vector scale modifier, affected by a slider.
@@ -98,7 +98,10 @@ Solely tasked with drawing charges.
 
 \subsubsection{Attributes:}
 
-\textbf{vec3 vPosition}: World coordinates for a specific charge.
+\begin{itemize}
+    \item\textbf{vec2 vPosition}: World coordinates for a specific charge.
+    \item \textbf{float vCharge}: The effective charge value of the charge.
+\end{itemize}
 
 \subsubsection{Uniforms:}
 
