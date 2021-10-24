@@ -1,0 +1,139 @@
+\documentclass[10pt]{report}
+
+\usepackage{sectsty}
+
+\chapternumberfont{\Large} 
+\chaptertitlefont{\Large}
+
+%%%%%%%%%%%%
+% Packages %
+%%%%%%%%%%%%
+
+\usepackage[noheader]{packages/sleek}
+\usepackage{lscape}
+\usepackage{packages/sleek-listings}
+\usepackage{packages/sleek-title}
+\usepackage{minted}
+
+\usemintedstyle{tango}
+
+
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\makeatletter
+% \patchcmd{<cmd>}{<search>}{<replace>}{<success>}{<failure>}
+% --- Patch \chapter
+\patchcmd{\@makechapterhead}{50\p@}{\chapheadtopskip}{}{}% Space from top of page to CHAPTER X
+\patchcmd{\@makechapterhead}{20\p@}{\chapheadsep}{}{}% Space between CHAPTER X and CHAPTER TITLE
+\patchcmd{\@makechapterhead}{40\p@}{\chapheadbelowskip}{}{}% Space between CHAPTER TITLE and text
+% --- Patch \chapter*
+\patchcmd{\@makeschapterhead}{50\p@}{\chapheadtopskip}{}{}% Space from top of page to CHAPTER TITLE
+\patchcmd{\@makeschapterhead}{40\p@}{\chapheadbelowskip}{}{}% SPace between CHAPTER TITLE and text
+\makeatother
+% Set new lengths
+\newlength{\chapheadtopskip}\setlength{\chapheadtopskip}{-40pt}
+\newlength{\chapheadsep}\setlength{\chapheadsep}{20pt}
+\newlength{\chapheadbelowskip}\setlength{\chapheadbelowskip}{20pt}
+
+%%%%%%%%%%%%%%
+% Title-page %
+%%%%%%%%%%%%%%
+
+\institute{Universidade Nova de Lisboa}
+\faculty{School of Science and Technology}
+\title{Electric Fields}
+\subtitle{Computer Graphics and Interfaces}
+\author{\textit{Authors}\\António Duarte - 58278\\Manuel Pereira - 57973}
+\date{\today}
+
+\def\tbs{\textbackslash}
+
+%%%%%%%%%%%%
+% Document %
+%%%%%%%%%%%%
+
+\begin{document}
+\maketitle
+\romantableofcontents
+
+\chapter{GLSL Shaders and their Inputs}
+
+Two GLSL programs were implemented for this project, 'gridProgram' and 'chargeProgram', either fully independent from the other, neither sharing buffers nor shaders.
+	
+\section{Grid Point Program and Shaders}
+
+Tasked with drawing the two points for each position, and the line connecting them. The visual effect created by shifting one of the points draws the equivalent to electric field lines.
+
+\subsection{Vertex Shader}
+
+\subsubsection{Attributes:}
+
+\textbf{vec3 vPosition}: World Coordinates for a specific point.
+
+\subsubsection{Uniforms:}
+
+\begin{itemize}
+    \item \textbf{float uTableWidth}: World width limit, used for world-coordinate transmortion to clip coordinates.
+    \item \textbf{float uTableHeight}: World height limit, used for world-coordinate transformation to clip coordinates.
+    \item \textbf{vec3 uChargePosition[MAX\_CHARGES]}: Vector matrix containing the position oof all charges, and their effective charge on the z field.
+    \item \textbf{int uChargeAmount}: Amount of charges present in the afore-mentioned matrix (serves as loop upper bound).
+    \item \textbf{float uLineLength}: Upper limit of line length, affected by a slider.
+    \item \textbf{float uFieldScale}: Vector scale modifier, affected by a slider.
+\end{itemize}
+
+\subsubsection{Varying:}
+
+\textbf{vec4 fColor}: Passes the RGBA color vector from the vertex shader to the fragment shader. Value is given by the colorize function.
+
+\subsection{Fragment Shader}
+	
+\subsubsection{Varying:}
+
+\textbf{varying vec4 fColor}: Receives RGBA color vector from vertex shader and applies it to gl\_fragColor. 
+	
+\section{Charge Point Program and Shaders}
+
+Solely tasked with drawing charges.
+
+\subsection{Vertex Shader}
+
+\subsubsection{Attributes:}
+
+\textbf{vec3 vPosition}: World coordinates for a specific charge.
+
+\subsubsection{Uniforms:}
+
+\begin{itemize}
+    \item \textbf{float uTableWidth}: World width limit, used for world-coordinate transformation to clip coordinates.
+    \item \textbf{float uTableHeight}: World height limit, used for world-coordinate transformation to clip coordinates.
+\end{itemize} 
+
+\subsubsection{Varying:}
+
+\textbf{float fCharge}: Passes the charge signal from the vertex shader to the fragment shader. Value is received through the z-field of the world coordinates {-1; 1}.
+
+\subsection{Fragment Shader}
+
+Uses procedural shading to apply complex shapes to a sole draw call. Point size is set to $20.0$.
+
+BAse procedural shading creates a circle from the point, and discards a horizontal rectangle to form a "-".
+If the charge received is positive, a vertical central rectangle is also discarded as to shape out "+", and the charge is drawn green.
+Otherwise, if the charge is negative, it is drawn red.
+
+\subsubsection{Varying:}
+
+\textbf{float fCharge}: Receives the charge signal from the vertex shader, used for procedural shading technique.
+
+\chapter{Extra Functionalities:}
+
+\begin{itemize}
+    \item \emph{Modifying max line length}: Changes the maximum line length. Accessed through the side panel, in the form of a slider.
+    \item \emph{Modifying field scale}: Changes the scale of the electric force applied on grid points. Accessed through the side panel, in the form of a slider.
+    \item \emph{Modifying rotational speed}: Changes the speed of charge rotation. Accessed through the side panel, in the form of a slider.
+    \item \emph{Charge reset}: Removes all charges on the field, applied by pressing "Backspace".
+    \item \emph{Charge rotation inversion}: Inverts the rotation of the charges, applied by pressing "I".
+    \item \emph{Toggle the UI elements}: Toggles the visibility of the sidebar, applied by pressing "U".
+\end{itemize}
+
+
+\end{document}
+
