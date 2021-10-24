@@ -133,7 +133,7 @@ function setup(shaders) {
 */
 function eventListeners() {
 	window.addEventListener("resize", resizeCanvas);
-	close.addEventListener("click", function () {
+	close.addEventListener("click", () => {
 			instructions.style.display = "None";
 		});
 	canvas.addEventListener("click", (event) => {
