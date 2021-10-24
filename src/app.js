@@ -131,9 +131,9 @@ function setup(shaders) {
 */
 function eventListeners() {
 	window.addEventListener("resize", resizeCanvas);
-	close.addEventListener("click", (event) => {
-		instructions.style.display = "None";
-	});
+	close.addEventListener("click", function () {
+			instructions.style.display = "None";
+		});
 	canvas.addEventListener("click", (event) => {
 		// Start by getting x and y coordinates inside the canvas element
 		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
@@ -175,7 +175,7 @@ function eventListeners() {
 }
 
 /**
- * Function that toggles the sidebar visibility.
+ * Toggles sidebar visibility.
 */
 function toggleSidebar() {
 	sidebarVisible = !sidebarVisible;
@@ -199,7 +199,11 @@ function resizeCanvas() {
 }
 
 /**
- * Adds a new vec2 to the array of charges.
+ * Adds a new charge to the array of charges.
+ * The charge has a starting x and y coordinate, aswell as a charge strenght.
+ * 
+ * Charge positivity is decided by the shiftKey event, which if true, produces a negative charge, otherwise positive.
+ * 
  * @param {float} x the x coordinate of the charge.
  * @param {float} y the y coordinate of the charge.
  * @param {boolean} shiftKey indicates if the shiftkey was pressed or not.
@@ -216,7 +220,9 @@ function addCharge(x, y, shiftKey) {
 }
 
 /**
- * Function responsible for drawing the points or lines between two vertices.
+ * Passes the required arguments to WebGL, such as buffer, attribues, glMode, and further fields.
+ * And, calls the draw function.
+ * 
  * @param {Array} uniforms array of uniforms and corresponding values (only simple uniform1f).
  * @param {WebGLBuffer} buffer the buffer to use.
  * @param {number} attribute the attribute to use.
@@ -244,7 +250,7 @@ function drawPoints(uniforms, buffer, attribute, amount, elemSize, glMode, strid
  * Function responsible for charge rotation around
  * the screen center.
  * 
- * Rotational speed is modified through the speed_mod field.
+ * Rotational speed is further modified through the speed_mod variable.
  */
 function rotateCharges() {
 	let newCharges = [];
@@ -269,7 +275,10 @@ function rotateCharges() {
 }
 
 /**
- * Function responsible of clearing the charges.
+ * Function responsible of removing the charges from the field.
+ * 
+ * Charges = [] would be enough to end the draw, although solely due to the update required by rotate_charges(). 
+ *  So, to provide a safe, nonreliant clear, the WebGL buffer is 'reset'.
  */
 function clearCharges() {
 	charges = [];
