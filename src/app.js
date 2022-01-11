@@ -134,8 +134,8 @@ function setup(shaders) {
 function eventListeners() {
 	window.addEventListener("resize", resizeCanvas);
 	close.addEventListener("click", () => {
-			instructions.style.display = "None";
-		});
+		instructions.style.display = "None";
+	});
 	canvas.addEventListener("click", (event) => {
 		// Start by getting x and y coordinates inside the canvas element
 		const x = (event.offsetX / canvas.width * TABLE_WIDTH) - TABLE_WIDTH / 2;
