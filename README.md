@@ -1,8 +1,8 @@
-# electric-fields
+# Electric Fields Simulator
 
-An electric fields simulator, written in Javascript using WebGL.
+An electric fields simulator, written in Javascript using WebGL for the Computer Graphics course at FCT-UNL.
 
-# test it yourself:
+# Test it yourself:
 
 https://antonionduarte.github.io/electric-fields/src/index.html
 
