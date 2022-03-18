@@ -1,5 +1,7 @@
 # electric-fields
 
+An electric fields simulator, written in Javascript using WebGL.
+
 ## roadmap
 
 [x] Make the base static table (test charges).
@@ -12,10 +14,3 @@
 
 https://antonionduarte.github.io/electric-fields/src/index.html
 
-## todo:
-
-- Don't forget to change what happens when you reach the point limit
-
-## sources
-
-- Project assignment https://cgi8150.freecluster.eu/projecto-01-electric-fields.html
